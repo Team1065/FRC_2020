@@ -16,4 +16,25 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final class DriveConstants {
+        public static final int kLeftFrontMotorPort = 0;
+        public static final int kLeftBackMotorPort = 2;
+        public static final int kRightFrontMotorPort = 1;
+        public static final int kRightBackMotorPort = 3;
+
+        // 80 is default for NEO on drivetrain. can be set more conservative or agressive if needed
+        public static final int kCurrentLimit  = 80;
+
+        public static final int kEncoderCPR = 42; //NEO encoder 42 CPR
+        public static final double kWheelDiameterInches = 6.0; //TODO: get actual value
+        public static final double kWheelGearRatio = 1.0; //TODO: get actual value. Need gear ratio since the encoder is attached to the motor
+        public static final double kEncoderDistancePerPulse =
+            // Assumes the encoders are directly mounted on the wheel shafts
+            ((kWheelDiameterInches * Math.PI) / (double) kEncoderCPR) * kWheelGearRatio;
+    }
+    public static final class OIConstants {
+        public static final int kleftjoystickPort = 0;
+        public static final int krightjoystickPort = 1;
+        public static final int kcopilotDsPort = 2;
+    }
 }
