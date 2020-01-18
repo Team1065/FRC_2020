@@ -31,6 +31,10 @@ public final class Constants {
         public static final double kEncoderDistancePerPulse =
             // Assumes the encoders are directly mounted on the wheel shafts
             ((kWheelDiameterInches * Math.PI) / (double) kEncoderCPR) * kWheelGearRatio;
+
+        public static final double kStraightDriveP = 0.1;//TODO: Tune
+        public static final double kStraightDriveI = 0;
+        public static final double kStraightDriveD = 0;
     }
     public static final class OIConstants {
         public static final int kleftjoystickPort = 0;

@@ -7,9 +7,12 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +23,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final CANSparkMax m_leftBackMotor = new CANSparkMax (DriveConstants.kLeftBackMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_rightFrontMotor = new CANSparkMax (DriveConstants.kRightFrontMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_rightBackMotor = new CANSparkMax (DriveConstants.kRightBackMotorPort, MotorType.kBrushless);
+
+  private AHRS m_gyro;
 
   // The motors on the left side of the drive.
   private final SpeedControllerGroup m_leftMotors = new SpeedControllerGroup(m_leftFrontMotor,m_leftBackMotor);
@@ -35,11 +40,17 @@ public class DriveSubsystem extends SubsystemBase {
     configureSpark(m_leftBackMotor);
     configureSpark(m_rightFrontMotor);
     configureSpark(m_rightBackMotor);
+
+    try {
+        m_gyro = new AHRS(SPI.Port.kMXP);
+      } catch (RuntimeException ex ) {
+        DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
+      }
   }
   
   private void configureSpark(CANSparkMax sparkMax) {
     sparkMax.restoreFactoryDefaults();
-    sparkMax.enableVoltageCompensation(12.0);
+    //sparkMax.enableVoltageCompensation(12.0);
     sparkMax.setSmartCurrentLimit(DriveConstants.kCurrentLimit);
     sparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake);
   }
@@ -59,5 +70,20 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void setMaxOutput(double maxOutput) {
     m_drive.setMaxOutput(maxOutput);
+  }
+
+  public double getHeading(){
+    try{
+      return m_gyro.getAngle();
+    } catch (RuntimeException ex ) {
+          return 0;
+    }
+  }
+
+  public void resetHeading(){
+    try{
+      m_gyro.reset();
+    } catch (RuntimeException ex ) {
+    }
   }
 }

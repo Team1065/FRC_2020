@@ -9,9 +9,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -47,6 +51,18 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    new JoystickButton(m_rightJoystick, 2).whenHeld(new PIDCommand(
+      new PIDController(DriveConstants.kStraightDriveP, DriveConstants.kStraightDriveI,
+                        DriveConstants.kStraightDriveD),
+      // Close the loop on the turn rate
+      m_drive::getHeading,
+      // Setpoint is 0
+      m_drive.getHeading(),
+      // Pipe the output to the turning controls
+      output -> m_drive.arcadeDrive(m_rightJoystick.getY(), output),
+      // Require the robot drive
+      m_drive));
+      
   }
 
 
