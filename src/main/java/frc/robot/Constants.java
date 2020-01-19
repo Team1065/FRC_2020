@@ -17,10 +17,10 @@ package frc.robot;
  */
 public final class Constants {
     public static final class DriveConstants {
-        public static final int kLeftFrontMotorPort = 0;
-        public static final int kLeftBackMotorPort = 2;
-        public static final int kRightFrontMotorPort = 1;
-        public static final int kRightBackMotorPort = 3;
+        public static final int kLeftFrontMotorPort = 1;
+        public static final int kLeftBackMotorPort = 3;
+        public static final int kRightFrontMotorPort = 2;
+        public static final int kRightBackMotorPort = 4;
 
         // 80 is default for NEO on drivetrain. can be set more conservative or agressive if needed
         public static final int kCurrentLimit  = 80;
