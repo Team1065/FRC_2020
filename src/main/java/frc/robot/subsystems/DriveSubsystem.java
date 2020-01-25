@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
@@ -57,7 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    updateStatus();
   }
 
   public void tankDrive(double left, double right){
@@ -85,5 +86,9 @@ public class DriveSubsystem extends SubsystemBase {
       m_gyro.reset();
     } catch (RuntimeException ex ) {
     }
+  }
+
+  public void updateStatus(){
+    SmartDashboard.putNumber("[DT] Heading", getHeading());
   }
 }

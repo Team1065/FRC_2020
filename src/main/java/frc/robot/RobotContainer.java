@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -28,10 +29,23 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_drive = new DriveSubsystem();
+  private final CellManipulation m_cellManipulation = new CellManipulation();
 
-  private final Joystick m_leftJoystick = new Joystick(OIConstants.kleftjoystickPort);
-  private final Joystick m_rightJoystick = new Joystick(OIConstants.krightjoystickPort);
-  private final Joystick m_copilotDS = new Joystick(OIConstants.kcopilotDsPort);
+  private final Joystick m_leftJoystick = new Joystick(OIConstants.kLeftjoystickPort);
+  private final Joystick m_rightJoystick = new Joystick(OIConstants.kRightjoystickPort);
+  private final Joystick m_copilotDS = new Joystick(OIConstants.kCopilotDsPort);
+
+  private final PIDCommand straightDriveCommand =  new PIDCommand(
+      new PIDController(DriveConstants.kStraightDriveP, DriveConstants.kStraightDriveI,
+                        DriveConstants.kStraightDriveD),
+      // Close the loop on the turn rate
+      m_drive::getHeading,
+      // Setpoint is 0
+      0,
+      // Pipe the output to the turning controls
+      output -> m_drive.arcadeDrive(m_rightJoystick.getY(), output),
+      // Require the robot drive
+      m_drive);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -42,6 +56,58 @@ public class RobotContainer {
 
     m_drive.setDefaultCommand(
       new RunCommand( () -> m_drive.tankDrive(m_leftJoystick.getY(), m_rightJoystick.getY()) , m_drive) );
+
+    m_cellManipulation.setDefaultCommand(
+      new RunCommand( () -> {
+        if (m_copilotDS.getRawButton(OIConstants.kIntakeOutPort)){
+          m_cellManipulation.setIntake(-.5);
+          m_cellManipulation.setQueue(-.5);
+          m_cellManipulation.setConveyor(-.5);
+        }
+        else if (m_copilotDS.getRawButton(OIConstants.kIntakeInPort)){
+          if (m_cellManipulation.getHighestSensorActive() < 2){
+            //get cells into the conveyor if there are non there yet
+            m_cellManipulation.setIntake(.5);
+            m_cellManipulation.setQueue(.5);
+            m_cellManipulation.setConveyor(.5);
+          }
+          else if (m_cellManipulation.getHighestSensorActive() < 5){
+            if(m_cellManipulation.getBottomSensor()){
+              //move cells up if there is space in the conveyor and there is a cell in the queue
+              m_cellManipulation.setIntake(.5);
+              m_cellManipulation.setQueue(.5);
+              m_cellManipulation.setConveyor(.5);
+            }
+            else{
+              //stop the conveyor until there is a cell in the to be queued
+              m_cellManipulation.setIntake(.5);
+              m_cellManipulation.setQueue(.5);
+              m_cellManipulation.setConveyor(0);
+            }
+          }
+          else{
+            if(m_cellManipulation.getBottomSensor()){
+              //reverse intake since the conveyor is full and there is a cell in the queue
+              m_cellManipulation.setIntake(-.5);
+              m_cellManipulation.setQueue(0);
+              m_cellManipulation.setConveyor(0);
+            }
+            else{
+              //queue the last cell
+              m_cellManipulation.setIntake(.5);
+              m_cellManipulation.setQueue(.5);
+              m_cellManipulation.setConveyor(0);
+            }
+          }
+        }
+        else{
+          m_cellManipulation.setIntake(0);
+          m_cellManipulation.setQueue(0);
+          m_cellManipulation.setConveyor(0);
+        }
+      }
+      , m_cellManipulation)
+    );
   }
 
   /**
@@ -51,18 +117,8 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_rightJoystick, 2).whenHeld(new PIDCommand(
-      new PIDController(DriveConstants.kStraightDriveP, DriveConstants.kStraightDriveI,
-                        DriveConstants.kStraightDriveD),
-      // Close the loop on the turn rate
-      m_drive::getHeading,
-      // Setpoint is 0
-      m_drive.getHeading(),
-      // Pipe the output to the turning controls
-      output -> m_drive.arcadeDrive(m_rightJoystick.getY(), output),
-      // Require the robot drive
-      m_drive));
-      
+    //TODO test that this fixes the setpoint not being updated after the first time the button is pressed.
+    new JoystickButton(m_rightJoystick, 2).whenHeld( straightDriveCommand.beforeStarting( () -> straightDriveCommand.getController().setSetpoint(m_drive.getHeading()), m_drive ) );
   }
 
 
