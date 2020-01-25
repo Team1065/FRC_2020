@@ -118,7 +118,21 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //TODO test that this fixes the setpoint not being updated after the first time the button is pressed.
-    new JoystickButton(m_rightJoystick, 2).whenHeld( straightDriveCommand.beforeStarting( () -> straightDriveCommand.getController().setSetpoint(m_drive.getHeading()), m_drive ) );
+    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> straightDriveCommand.getController().setSetpoint(m_drive.getHeading()), m_drive ) );
+    
+    new JoystickButton(m_rightJoystick, OIConstants.kshootPort).whenHeld( new RunCommand( () -> {
+        if(true){//TODO: change to shooter up to speed
+          m_cellManipulation.setIntake(.5);
+          m_cellManipulation.setQueue(.5);
+          m_cellManipulation.setConveyor(.5);
+        }
+        else{
+          m_cellManipulation.setIntake(0);
+          m_cellManipulation.setQueue(0);
+          m_cellManipulation.setConveyor(0);
+        }
+      }, m_cellManipulation)
+    );
   }
 
 

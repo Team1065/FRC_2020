@@ -42,6 +42,11 @@ public final class Constants {
         public static final int kRightjoystickPort = 1;
         public static final int kCopilotDsPort = 2;
 
+        //right joystick inputs
+        public static final int kstraightDrivePort = 2;
+        public static final int kshootPort = 1;
+
+        //copilot inputs
         public static final int kIntakeInPort = 4;
         public static final int kIntakeOutPort = 4;
     }
