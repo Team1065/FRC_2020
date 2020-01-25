@@ -19,6 +19,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -30,6 +31,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_drive = new DriveSubsystem();
   private final CellManipulation m_cellManipulation = new CellManipulation();
+  private final Vision vision = new Vision();
 
   private final Joystick m_leftJoystick = new Joystick(OIConstants.kLeftjoystickPort);
   private final Joystick m_rightJoystick = new Joystick(OIConstants.kRightjoystickPort);
@@ -119,7 +121,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     //TODO test that this fixes the setpoint not being updated after the first time the button is pressed.
     new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> straightDriveCommand.getController().setSetpoint(m_drive.getHeading()), m_drive ) );
-    
+
     new JoystickButton(m_rightJoystick, OIConstants.kshootPort).whenHeld( new RunCommand( () -> {
         if(true){//TODO: change to shooter up to speed
           m_cellManipulation.setIntake(.5);
