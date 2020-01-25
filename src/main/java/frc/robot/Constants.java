@@ -56,4 +56,5 @@ public final class Constants {
         public static final int kMiddleSensorPort = 2;
         public static final int kMiddleBottomSensorPort = 1;
         public static final int kBottomSensorPort = 0;
+    }
 }
