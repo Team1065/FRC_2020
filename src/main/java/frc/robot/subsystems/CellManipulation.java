@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,9 +17,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CellManiputalionConstants;
 
 public class CellManipulation extends SubsystemBase {
-  private final VictorSP m_intakeMotor = new VictorSP(CellManiputalionConstants.kIntakeMotorPort);
-  private final VictorSP m_queueMotor = new VictorSP(CellManiputalionConstants.kQueueMotorPort);
-  private final VictorSP m_conveyorMotor = new VictorSP(CellManiputalionConstants.kConveyorMotorPort);
+  private final VictorSPX m_intakeMotor = new VictorSPX(CellManiputalionConstants.kIntakeMotorPort);
+  private final VictorSPX m_queueMotor = new VictorSPX(CellManiputalionConstants.kQueueMotorPort);
+  private final VictorSPX m_conveyorMotor = new VictorSPX(CellManiputalionConstants.kConveyorMotorPort);
 
   private final DigitalInput m_topSensor = new DigitalInput(CellManiputalionConstants.kTopSensorPort);
   private final DigitalInput m_middleTopSensor = new DigitalInput(CellManiputalionConstants.kMiddleTopSensorPort);
@@ -35,31 +38,31 @@ public class CellManipulation extends SubsystemBase {
   }
 
   public void setIntake(double speed){
-    m_intakeMotor.set(speed);
+    m_intakeMotor.set(ControlMode.PercentOutput,speed);
   }
 
   public void setQueue(double speed){
-    m_queueMotor.set(speed);
+    m_queueMotor.set(ControlMode.PercentOutput,speed);
   }
 
   public void setConveyor(double speed){
-    m_conveyorMotor.set(speed);
+    m_conveyorMotor.set(ControlMode.PercentOutput,speed);
   }
 
   public int getHighestSensorActive(){
-    if(m_topSensor.get()){
+    if(!m_topSensor.get()){
       return 5;
     }
-    else if(m_middleTopSensor.get()){
+    else if(!m_middleTopSensor.get()){
       return 4;
     }
-    else if(m_middleSensor.get()){
+    else if(!m_middleSensor.get()){
       return 3;
     }
-    else if(m_middleBottomSensor.get()){
+    else if(!m_middleBottomSensor.get()){
       return 2;
     }
-    else if(m_bottomSensor.get()){
+    else if(!m_bottomSensor.get()){
       return 1;
     }
     else{
@@ -68,7 +71,7 @@ public class CellManipulation extends SubsystemBase {
   }
 
   public boolean getBottomSensor(){
-    return m_bottomSensor.get();
+    return !m_bottomSensor.get();
   }
 
   public void updateStatus(){

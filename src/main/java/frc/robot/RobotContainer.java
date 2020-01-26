@@ -37,15 +37,17 @@ public class RobotContainer {
   private final Joystick m_rightJoystick = new Joystick(OIConstants.kRightjoystickPort);
   private final Joystick m_copilotDS = new Joystick(OIConstants.kCopilotDsPort);
 
+  private static double setpoint = 0;
+
   private final PIDCommand straightDriveCommand =  new PIDCommand(
       new PIDController(DriveConstants.kStraightDriveP, DriveConstants.kStraightDriveI,
                         DriveConstants.kStraightDriveD),
       // Close the loop on the turn rate
       m_drive::getHeading,
       // Setpoint is 0
-      0,
+      () -> setpoint,
       // Pipe the output to the turning controls
-      output -> m_drive.arcadeDrive(m_rightJoystick.getY(), output),
+      output -> m_drive.arcadeDrive(-m_rightJoystick.getY(), output),
       // Require the robot drive
       m_drive);
 
@@ -57,7 +59,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     m_drive.setDefaultCommand(
-      new RunCommand( () -> m_drive.tankDrive(m_leftJoystick.getY(), m_rightJoystick.getY()) , m_drive) );
+      new RunCommand( () -> m_drive.tankDrive(-m_leftJoystick.getY(), -m_rightJoystick.getY()) , m_drive) );
 
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
@@ -120,7 +122,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //TODO test that this fixes the setpoint not being updated after the first time the button is pressed.
-    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> straightDriveCommand.getController().setSetpoint(m_drive.getHeading()), m_drive ) );
+    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> setpoint = m_drive.getHeading(), m_drive ) );
 
     new JoystickButton(m_rightJoystick, OIConstants.kshootPort).whenHeld( new RunCommand( () -> {
         if(true){//TODO: change to shooter up to speed

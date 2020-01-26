@@ -23,7 +23,7 @@ public final class Constants {
         public static final int kRightBackMotorPort = 4;
 
         // 80 is default for NEO on drivetrain. can be set more conservative or agressive if needed
-        public static final int kCurrentLimit  = 80;
+        public static final int kCurrentLimit  = 60;
 
         public static final int kEncoderCPR = 42; //NEO encoder 42 CPR
         public static final double kWheelDiameterInches = 6.0; //TODO: get actual value
@@ -34,7 +34,7 @@ public final class Constants {
 
         public static final double kStraightDriveP = 0.1;//TODO: Tune
         public static final double kStraightDriveI = 0;
-        public static final double kStraightDriveD = 0;
+        public static final double kStraightDriveD = 0.005;
     }
 
     public static final class OIConstants {
@@ -48,7 +48,7 @@ public final class Constants {
 
         //copilot inputs
         public static final int kIntakeInPort = 4;
-        public static final int kIntakeOutPort = 4;
+        public static final int kIntakeOutPort = 5;
     }
 
     public static final class CellManiputalionConstants {
