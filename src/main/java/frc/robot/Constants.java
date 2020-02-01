@@ -32,9 +32,24 @@ public final class Constants {
             // Assumes the encoders are directly mounted on the wheel shafts
             ((kWheelDiameterInches * Math.PI) / (double) kEncoderCPR) * kWheelGearRatio;
 
-        public static final double kStraightDriveP = 0.1;//TODO: Tune
+        public static final double kStraightDriveP = 0.1;
         public static final double kStraightDriveI = 0;
         public static final double kStraightDriveD = 0.005;
+    }
+
+    public static final class ShooterConstants {
+        public static final int kMasterMotorPort = 5;
+        public static final int kSlaveMotorPort = 6;
+
+        public static final int kEncoderCPR = 42; //NEO encoder 42 CPR
+        public static final double kP = 1;//TODO: Tune
+        public static final double kI = 0;
+        public static final double kD = 0;
+        public static final double kFF = 0;
+        public static final double kMaxOutput = 1;
+        public static final double kMinOutput = 0;
+
+        public static final int kCurrentLimit  = 80;//TODO: Might need to tune
     }
 
     public static final class OIConstants {

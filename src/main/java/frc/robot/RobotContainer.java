@@ -19,6 +19,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision;
 
 /**
@@ -31,13 +32,14 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_drive = new DriveSubsystem();
   private final CellManipulation m_cellManipulation = new CellManipulation();
-  private final Vision vision = new Vision();
+  private final Vision m_vision = new Vision();
+  private final Shooter m_shooter = new Shooter();
 
   private final Joystick m_leftJoystick = new Joystick(OIConstants.kLeftjoystickPort);
   private final Joystick m_rightJoystick = new Joystick(OIConstants.kRightjoystickPort);
   private final Joystick m_copilotDS = new Joystick(OIConstants.kCopilotDsPort);
 
-  private static double setpoint = 0;
+  private static double m_driveStraightSetpoint = 0;
 
   private final PIDCommand straightDriveCommand =  new PIDCommand(
       new PIDController(DriveConstants.kStraightDriveP, DriveConstants.kStraightDriveI,
@@ -45,7 +47,7 @@ public class RobotContainer {
       // Close the loop on the turn rate
       m_drive::getHeading,
       // Setpoint is 0
-      () -> setpoint,
+      () -> m_driveStraightSetpoint,
       // Pipe the output to the turning controls
       output -> m_drive.arcadeDrive(-m_rightJoystick.getY(), output),
       // Require the robot drive
@@ -60,6 +62,12 @@ public class RobotContainer {
 
     m_drive.setDefaultCommand(
       new RunCommand( () -> m_drive.tankDrive(-m_leftJoystick.getY(), -m_rightJoystick.getY()) , m_drive) );
+
+    //TODO: Update default command
+    m_vision.setDefaultCommand(new RunCommand( () -> m_vision.updateStatus(), m_vision) );
+
+    m_shooter.setDefaultCommand(
+      new RunCommand( () -> m_shooter.tune() , m_shooter) );
 
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
@@ -121,12 +129,12 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //TODO test that this fixes the setpoint not being updated after the first time the button is pressed.
-    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> setpoint = m_drive.getHeading(), m_drive ) );
+    //Drive Straight
+    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> m_driveStraightSetpoint = m_drive.getHeading(), m_drive ) );
 
     new JoystickButton(m_rightJoystick, OIConstants.kshootPort).whenHeld( new RunCommand( () -> {
         if(true){//TODO: change to shooter up to speed
-          m_cellManipulation.setIntake(.5);
+          m_cellManipulation.setIntake(0);
           m_cellManipulation.setQueue(.5);
           m_cellManipulation.setConveyor(.5);
         }
