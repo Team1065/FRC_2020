@@ -17,10 +17,10 @@ package frc.robot;
  */
 public final class Constants {
     public static final class DriveConstants {
-        public static final int kLeftFrontMotorPort = 1;
-        public static final int kLeftBackMotorPort = 3;
-        public static final int kRightFrontMotorPort = 2;
-        public static final int kRightBackMotorPort = 4;
+        public static final int kLeftFrontMotorPort = 1;//SPARK Max
+        public static final int kLeftBackMotorPort = 3;//SPARK Max
+        public static final int kRightFrontMotorPort = 2;//SPARK Max
+        public static final int kRightBackMotorPort = 4;//SPARK Max
 
         // 80 is default for NEO on drivetrain. can be set more conservative or agressive if needed
         public static final int kCurrentLimit  = 60;
@@ -38,8 +38,10 @@ public final class Constants {
     }
 
     public static final class ShooterConstants {
-        public static final int kMasterMotorPort = 5;
-        public static final int kSlaveMotorPort = 6;
+        public static final int kMasterMotorPort = 5;//SPARK Max
+        public static final int kSlaveMotorPort = 6;//SPARK Max
+
+        public static final int kFeederMotorPort = 4;//VictorSPX
 
         public static final int kEncoderCPR = 42; //NEO encoder 42 CPR
         public static final double kP = 1;//TODO: Tune
@@ -48,8 +50,28 @@ public final class Constants {
         public static final double kFF = 0;
         public static final double kMaxOutput = 1;
         public static final double kMinOutput = 0;
+        public static final double kAllowedError  = 100;//TODO: Tune
 
         public static final int kCurrentLimit  = 80;//TODO: Might need to tune
+    }
+
+    public static final class CellManiputalionConstants {
+        public static final int kIntakeMotorPort = 1;//VictorSPX
+        public static final int kQueueMotorPort = 2;//VictorSPX
+        public static final int kConveyorMotorPort = 3;//VictorSPX
+
+        public static final int kTopSensorPort = 4;
+        public static final int kMiddleTopSensorPort = 3;
+        public static final int kMiddleSensorPort = 2;
+        public static final int kMiddleBottomSensorPort = 1;
+        public static final int kBottomSensorPort = 0;
+    }
+
+    public static final class TurretConstants {
+        public static final int kTurretMotor = 5;//VictorSPX
+
+        public static final int kLeftSensorPort = 5;
+        public static final int kRightSensorPort = 6;
     }
 
     public static final class OIConstants {
@@ -64,17 +86,6 @@ public final class Constants {
         //copilot inputs
         public static final int kIntakeInPort = 4;
         public static final int kIntakeOutPort = 5;
-    }
-
-    public static final class CellManiputalionConstants {
-        public static final int kIntakeMotorPort = 1;
-        public static final int kQueueMotorPort = 2;
-        public static final int kConveyorMotorPort = 3;
-
-        public static final int kTopSensorPort = 4;
-        public static final int kMiddleTopSensorPort = 3;
-        public static final int kMiddleSensorPort = 2;
-        public static final int kMiddleBottomSensorPort = 1;
-        public static final int kBottomSensorPort = 0;
+        public static final int kTurretJoystickXPort = 4;
     }
 }

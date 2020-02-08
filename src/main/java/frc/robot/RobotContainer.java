@@ -20,6 +20,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 
 /**
@@ -34,6 +35,7 @@ public class RobotContainer {
   private final CellManipulation m_cellManipulation = new CellManipulation();
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
+  private final Turret m_turret = new Turret();
 
   private final Joystick m_leftJoystick = new Joystick(OIConstants.kLeftjoystickPort);
   private final Joystick m_rightJoystick = new Joystick(OIConstants.kRightjoystickPort);
@@ -66,48 +68,56 @@ public class RobotContainer {
     //TODO: Update default command
     m_vision.setDefaultCommand(new RunCommand( () -> m_vision.updateStatus(), m_vision) );
 
+    //TODO: Update default command
     m_shooter.setDefaultCommand(
-      new RunCommand( () -> m_shooter.tune() , m_shooter) );
+      new RunCommand( () -> m_shooter.tune(), m_shooter) );
+
+    //TODO: Update default command
+    m_turret.setDefaultCommand(
+      new RunCommand( () -> m_turret.setSpeed(getDesiredTurretSpeed()), m_shooter) );
 
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
+        double intakeSpeed = .4;
+        double queueSpeed = .5;
+        double conveyorSpeed = .5;
         if (m_copilotDS.getRawButton(OIConstants.kIntakeOutPort)){
-          m_cellManipulation.setIntake(-.5);
-          m_cellManipulation.setQueue(-.5);
-          m_cellManipulation.setConveyor(-.5);
+          m_cellManipulation.setIntake(-intakeSpeed);
+          m_cellManipulation.setQueue(-queueSpeed);
+          m_cellManipulation.setConveyor(-conveyorSpeed);
         }
         else if (m_copilotDS.getRawButton(OIConstants.kIntakeInPort)){
           if (m_cellManipulation.getHighestSensorActive() < 2){
             //get cells into the conveyor if there are non there yet
-            m_cellManipulation.setIntake(.5);
-            m_cellManipulation.setQueue(.5);
-            m_cellManipulation.setConveyor(.5);
+            m_cellManipulation.setIntake(intakeSpeed);
+            m_cellManipulation.setQueue(queueSpeed);
+            m_cellManipulation.setConveyor(conveyorSpeed);
           }
           else if (m_cellManipulation.getHighestSensorActive() < 5){
             if(m_cellManipulation.getBottomSensor()){
               //move cells up if there is space in the conveyor and there is a cell in the queue
-              m_cellManipulation.setIntake(.5);
-              m_cellManipulation.setQueue(.5);
-              m_cellManipulation.setConveyor(.5);
+              m_cellManipulation.setIntake(intakeSpeed);
+              m_cellManipulation.setQueue(queueSpeed);
+              m_cellManipulation.setConveyor(conveyorSpeed);
             }
             else{
               //stop the conveyor until there is a cell in the to be queued
-              m_cellManipulation.setIntake(.5);
-              m_cellManipulation.setQueue(.5);
+              m_cellManipulation.setIntake(intakeSpeed);
+              m_cellManipulation.setQueue(queueSpeed);
               m_cellManipulation.setConveyor(0);
             }
           }
           else{
             if(m_cellManipulation.getBottomSensor()){
               //reverse intake since the conveyor is full and there is a cell in the queue
-              m_cellManipulation.setIntake(-.5);
+              m_cellManipulation.setIntake(-intakeSpeed);
               m_cellManipulation.setQueue(0);
               m_cellManipulation.setConveyor(0);
             }
             else{
               //queue the last cell
-              m_cellManipulation.setIntake(.5);
-              m_cellManipulation.setQueue(.5);
+              m_cellManipulation.setIntake(intakeSpeed);
+              m_cellManipulation.setQueue(queueSpeed);
               m_cellManipulation.setConveyor(0);
             }
           }
@@ -132,19 +142,72 @@ public class RobotContainer {
     //Drive Straight
     new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> m_driveStraightSetpoint = m_drive.getHeading(), m_drive ) );
 
+    //Shoot trigger
     new JoystickButton(m_rightJoystick, OIConstants.kshootPort).whenHeld( new RunCommand( () -> {
-        if(true){//TODO: change to shooter up to speed
+        if (m_copilotDS.getRawButton(OIConstants.kIntakeOutPort)){
+          m_cellManipulation.setIntake(-.4);
+        }
+        else if(m_copilotDS.getRawButton(OIConstants.kIntakeInPort)){
+          m_cellManipulation.setIntake(.4);
+        }
+        else{
           m_cellManipulation.setIntake(0);
+        }
+
+        if(m_shooter.upToSpeed()){
           m_cellManipulation.setQueue(.5);
           m_cellManipulation.setConveyor(.5);
         }
         else{
-          m_cellManipulation.setIntake(0);
           m_cellManipulation.setQueue(0);
           m_cellManipulation.setConveyor(0);
         }
       }, m_cellManipulation)
     );
+  }
+
+  public double getDesiredTurretSpeed(){
+    //TODO: Tune
+    double turretStickX = m_copilotDS.getRawAxis(OIConstants.kTurretJoystickXPort);
+    if(turretStickX < 0.03){
+      return -0.3;
+    }
+    else if(turretStickX > 0.07){
+      return 0.3;
+    }
+    else{
+      return 0;
+    }
+  }
+
+  public double getDesiredShooterSpeed(){
+    //TODO: Tune
+    double speed;
+    double knobValue = m_copilotDS.getRawAxis(1);
+    double threshold = 0.010;
+
+    //If Shooter Knob is at 1
+    if(knobValue < 0 + threshold){
+        speed = 0;
+    }
+    //If Shooter Knob is at 2
+    else if(knobValue >= 0.024 - threshold && knobValue < 024 + threshold){
+        speed = 1000;
+    }
+    //If Shooter Knob is at 3
+    else if(knobValue >= 0.055 - threshold && knobValue < 0.024 + threshold){
+        speed = 3000;
+    }
+    //If Shooter Knob is at 4
+    else if(knobValue >= 0.087 - threshold && knobValue < 0.087 + threshold){
+        speed = 6000;
+    }
+    else
+    {
+        speed = 0;
+    }
+  
+    return speed;
   }
 
 

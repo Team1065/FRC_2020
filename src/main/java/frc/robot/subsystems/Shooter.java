@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -22,8 +24,10 @@ public class Shooter extends SubsystemBase {
   private final CANSparkMax m_slaveMotor = new CANSparkMax(ShooterConstants.kSlaveMotorPort, MotorType.kBrushless);
   private final CANPIDController m_pidController;
   private final CANEncoder m_encoder;
-  public double m_kP, m_kI, m_kD, m_kFF, m_kMaxOutput, m_kMinOutput, m_maxRPM, m_setpoint;
-  
+  private double m_kP, m_kI, m_kD, m_kFF, m_setpoint;
+
+  private final VictorSPX m_feederMotor =  new VictorSPX(ShooterConstants.kFeederMotorPort);
+
   public Shooter() {
     configureSpark(m_masterMotor);
     configureSpark(m_slaveMotor);
@@ -59,6 +63,28 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  public void setFeeder(double speed){
+    m_feederMotor.set(ControlMode.PercentOutput,speed);
+  }
+
+  public void setSetpoint(double setpoint){
+    m_pidController.setReference(setpoint, ControlType.kVelocity);
+
+    m_setpoint = setpoint;
+
+    if(m_setpoint < 1){
+      setFeeder(0.5);
+    }
+    else{
+      setFeeder(0);
+    }
+  }
+
+  public boolean upToSpeed() {
+    double curVel = m_encoder.getVelocity();
+    return Math.abs(curVel - m_setpoint) < ShooterConstants.kAllowedError;
+  }
+
   public void tune () {
     // read PID coefficients from SmartDashboard
     double p = SmartDashboard.getNumber("[Shooter] P Gain", ShooterConstants.kP);
@@ -75,5 +101,12 @@ public class Shooter extends SubsystemBase {
     if((setpoint != m_setpoint)) { m_pidController.setReference(setpoint, ControlType.kVelocity); m_setpoint = setpoint; }
 
     SmartDashboard.putNumber("[Shooter] Velocity", m_encoder.getVelocity());
+
+    if(m_setpoint < 1){
+      setFeeder(0.5);
+    }
+    else{
+      setFeeder(0);
+    }
   }
 }
