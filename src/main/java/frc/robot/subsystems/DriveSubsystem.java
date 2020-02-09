@@ -54,7 +54,7 @@ public class DriveSubsystem extends SubsystemBase {
     //sparkMax.enableVoltageCompensation(12.0s);
     sparkMax.setOpenLoopRampRate(0.08);
     sparkMax.setSmartCurrentLimit(DriveConstants.kCurrentLimit);
-    sparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    sparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
 
   @Override

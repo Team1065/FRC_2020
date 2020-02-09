@@ -40,14 +40,14 @@ public final class Constants {
     public static final class ShooterConstants {
         public static final int kMasterMotorPort = 5;//SPARK Max
         public static final int kSlaveMotorPort = 6;//SPARK Max
-
-        public static final int kFeederMotorPort = 4;//VictorSPX
+        public static final int kFeederMotorPort = 7;//SPARK Max
 
         public static final int kEncoderCPR = 42; //NEO encoder 42 CPR
-        public static final double kP = 1;//TODO: Tune
-        public static final double kI = 0;
+        public static final double kP = 0.000200;//TODO: Tune
+        public static final double kI = 0.000001;
         public static final double kD = 0;
-        public static final double kFF = 0;
+        public static final double kIZone = 300;
+        public static final double kFF = 0.000155;
         public static final double kMaxOutput = 1;
         public static final double kMinOutput = 0;
         public static final double kAllowedError  = 100;//TODO: Tune
@@ -68,7 +68,7 @@ public final class Constants {
     }
 
     public static final class TurretConstants {
-        public static final int kTurretMotor = 5;//VictorSPX
+        public static final int kTurretMotor = 4;//VictorSPX
 
         public static final int kLeftSensorPort = 5;
         public static final int kRightSensorPort = 6;

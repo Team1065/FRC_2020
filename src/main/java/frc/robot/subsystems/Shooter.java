@@ -13,6 +13,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.SparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,14 +25,22 @@ public class Shooter extends SubsystemBase {
   private final CANSparkMax m_slaveMotor = new CANSparkMax(ShooterConstants.kSlaveMotorPort, MotorType.kBrushless);
   private final CANPIDController m_pidController;
   private final CANEncoder m_encoder;
-  private double m_kP, m_kI, m_kD, m_kFF, m_setpoint;
+  private double m_kP, m_kI, m_kD, m_kIZone, m_kFF, m_setpoint;
 
-  private final VictorSPX m_feederMotor =  new VictorSPX(ShooterConstants.kFeederMotorPort);
+  private final CANSparkMax m_feederMotor =  new CANSparkMax(ShooterConstants.kFeederMotorPort, MotorType.kBrushless);
 
   public Shooter() {
     configureSpark(m_masterMotor);
     configureSpark(m_slaveMotor);
-    m_slaveMotor.follow(m_masterMotor);
+    configureSpark(m_feederMotor);
+
+    m_masterMotor.setInverted(true);
+    m_feederMotor.setInverted(true);
+
+    m_slaveMotor.setInverted(false);
+
+    m_slaveMotor.follow(m_masterMotor, true);
+    m_feederMotor.follow(m_masterMotor);
 
     m_pidController = m_masterMotor.getPIDController();
     m_encoder = m_masterMotor.getEncoder();
@@ -47,7 +56,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("[Shooter] P Gain", ShooterConstants.kP);
     SmartDashboard.putNumber("[Shooter] I Gain", ShooterConstants.kI);
     SmartDashboard.putNumber("[Shooter] D Gain", ShooterConstants.kD);
-    SmartDashboard.putNumber("[Shooter] I Zone", ShooterConstants.kI);
+    SmartDashboard.putNumber("[Shooter] I Zone", ShooterConstants.kIZone);
     SmartDashboard.putNumber("[Shooter] Feed Forward", ShooterConstants.kFF);
     SmartDashboard.putNumber("[Shooter] Setpoint", 0);
   }
@@ -63,21 +72,12 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setFeeder(double speed){
-    m_feederMotor.set(ControlMode.PercentOutput,speed);
-  }
 
   public void setSetpoint(double setpoint){
     m_pidController.setReference(setpoint, ControlType.kVelocity);
 
     m_setpoint = setpoint;
 
-    if(m_setpoint < 1){
-      setFeeder(0.5);
-    }
-    else{
-      setFeeder(0);
-    }
   }
 
   public boolean upToSpeed() {
@@ -90,6 +90,7 @@ public class Shooter extends SubsystemBase {
     double p = SmartDashboard.getNumber("[Shooter] P Gain", ShooterConstants.kP);
     double i = SmartDashboard.getNumber("[Shooter] I Gain", ShooterConstants.kI);
     double d = SmartDashboard.getNumber("[Shooter] D Gain", ShooterConstants.kD);
+    double iZone = SmartDashboard.getNumber("[Shooter] I Zone", ShooterConstants.kIZone);
     double ff = SmartDashboard.getNumber("[Shooter] Feed Forward", ShooterConstants.kFF);
     double setpoint = SmartDashboard.getNumber("[Shooter] Setpoint", 0);
 
@@ -97,16 +98,11 @@ public class Shooter extends SubsystemBase {
     if((p != m_kP)) { m_pidController.setP(p); m_kP = p; }
     if((i != m_kI)) { m_pidController.setI(i); m_kI = i; }
     if((d != m_kD)) { m_pidController.setD(d); m_kD = d; }
+    if((i != m_kIZone)) { m_pidController.setIZone(iZone); m_kIZone = iZone; }
     if((ff != m_kFF)) { m_pidController.setFF(ff); m_kFF = ff; }
     if((setpoint != m_setpoint)) { m_pidController.setReference(setpoint, ControlType.kVelocity); m_setpoint = setpoint; }
 
     SmartDashboard.putNumber("[Shooter] Velocity", m_encoder.getVelocity());
 
-    if(m_setpoint < 1){
-      setFeeder(0.5);
-    }
-    else{
-      setFeeder(0);
-    }
   }
 }

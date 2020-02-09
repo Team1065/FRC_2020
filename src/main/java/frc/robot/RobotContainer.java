@@ -19,6 +19,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Lighting;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
@@ -36,6 +37,7 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
   private final Turret m_turret = new Turret();
+  private final Lighting m_lighting = new Lighting();
 
   private final Joystick m_leftJoystick = new Joystick(OIConstants.kLeftjoystickPort);
   private final Joystick m_rightJoystick = new Joystick(OIConstants.kRightjoystickPort);
@@ -74,7 +76,7 @@ public class RobotContainer {
 
     //TODO: Update default command
     m_turret.setDefaultCommand(
-      new RunCommand( () -> m_turret.setSpeed(getDesiredTurretSpeed()), m_shooter) );
+      new RunCommand( () -> m_turret.setSpeed(getDesiredTurretSpeed()), m_turret) );
 
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {

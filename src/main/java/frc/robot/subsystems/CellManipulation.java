@@ -27,7 +27,7 @@ public class CellManipulation extends SubsystemBase {
   private final DigitalInput m_bottomSensor = new DigitalInput(CellManiputalionConstants.kBottomSensorPort);
 
   public CellManipulation() {
-
+  
   }
 
   @Override
