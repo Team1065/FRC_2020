@@ -16,6 +16,7 @@ import com.revrobotics.ControlType;
 import com.revrobotics.SparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -23,11 +24,12 @@ import frc.robot.Constants.ShooterConstants;
 public class Shooter extends SubsystemBase {
   private final CANSparkMax m_masterMotor = new CANSparkMax(ShooterConstants.kMasterMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_slaveMotor = new CANSparkMax(ShooterConstants.kSlaveMotorPort, MotorType.kBrushless);
+  private final CANSparkMax m_feederMotor =  new CANSparkMax(ShooterConstants.kFeederMotorPort, MotorType.kBrushless);
   private final CANPIDController m_pidController;
   private final CANEncoder m_encoder;
-  private double m_kP, m_kI, m_kD, m_kIZone, m_kFF, m_setpoint;
+  private double m_kP, m_kI, m_kD, m_kIZone, m_kFF, m_setpoint, m_setHoodAngle;
 
-  private final CANSparkMax m_feederMotor =  new CANSparkMax(ShooterConstants.kFeederMotorPort, MotorType.kBrushless);
+  private Servo m_hoodServo = new Servo(ShooterConstants.kHoodServoPort);
 
   public Shooter() {
     configureSpark(m_masterMotor);
@@ -59,6 +61,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("[Shooter] I Zone", ShooterConstants.kIZone);
     SmartDashboard.putNumber("[Shooter] Feed Forward", ShooterConstants.kFF);
     SmartDashboard.putNumber("[Shooter] Setpoint", 0);
+    SmartDashboard.putNumber("[Shooter] Tune Hood Angle", ShooterConstants.kDefaultHoodAngle);
   }
 
   private void configureSpark(CANSparkMax sparkMax) {
@@ -69,15 +72,17 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    updateStatus();
   }
 
 
   public void setSetpoint(double setpoint){
     m_pidController.setReference(setpoint, ControlType.kVelocity);
-
     m_setpoint = setpoint;
+  }
 
+  public void setHoodAngle(double angle){
+    m_hoodServo.setAngle(angle);
   }
 
   public boolean upToSpeed() {
@@ -93,6 +98,7 @@ public class Shooter extends SubsystemBase {
     double iZone = SmartDashboard.getNumber("[Shooter] I Zone", ShooterConstants.kIZone);
     double ff = SmartDashboard.getNumber("[Shooter] Feed Forward", ShooterConstants.kFF);
     double setpoint = SmartDashboard.getNumber("[Shooter] Setpoint", 0);
+    double hoodAngle = SmartDashboard.getNumber("[Shooter] Tune Hood Angle", ShooterConstants.kDefaultHoodAngle);
 
     // if PID coefficients on SmartDashboard have changed, write new values to controller
     if((p != m_kP)) { m_pidController.setP(p); m_kP = p; }
@@ -101,8 +107,12 @@ public class Shooter extends SubsystemBase {
     if((i != m_kIZone)) { m_pidController.setIZone(iZone); m_kIZone = iZone; }
     if((ff != m_kFF)) { m_pidController.setFF(ff); m_kFF = ff; }
     if((setpoint != m_setpoint)) { m_pidController.setReference(setpoint, ControlType.kVelocity); m_setpoint = setpoint; }
+    if((hoodAngle != m_setHoodAngle)) { setHoodAngle(hoodAngle); m_setHoodAngle = hoodAngle; }
 
+  }
+
+  public void updateStatus(){
     SmartDashboard.putNumber("[Shooter] Velocity", m_encoder.getVelocity());
-
+    SmartDashboard.putNumber("[Shooter] Hood Angle", m_hoodServo.getAngle());
   }
 }

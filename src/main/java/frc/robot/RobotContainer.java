@@ -67,14 +67,14 @@ public class RobotContainer {
     m_drive.setDefaultCommand(
       new RunCommand( () -> m_drive.tankDrive(-m_leftJoystick.getY(), -m_rightJoystick.getY()) , m_drive) );
 
-    //TODO: Update default command
+    //TODO: Update default command to change between drive mode and vision mode
     m_vision.setDefaultCommand(new RunCommand( () -> m_vision.updateStatus(), m_vision) );
 
-    //TODO: Update default command
+    //TODO: Update default command to m_shooter.setSetpoint(getDesiredShooterSpeed()); m_shooter.setHoodAngle(getDesiredShooterHoodAngle());
     m_shooter.setDefaultCommand(
       new RunCommand( () -> m_shooter.tune(), m_shooter) );
 
-    //TODO: Update default command
+    //TODO: Update default command to select between manual and vision movement
     m_turret.setDefaultCommand(
       new RunCommand( () -> m_turret.setSpeed(getDesiredTurretSpeed()), m_turret) );
 
@@ -172,10 +172,10 @@ public class RobotContainer {
     //TODO: Tune
     double turretStickX = m_copilotDS.getRawAxis(OIConstants.kTurretJoystickXPort);
     if(turretStickX < 0.03){
-      return -0.3;
+      return -0.5;
     }
     else if(turretStickX > 0.07){
-      return 0.3;
+      return 0.5;
     }
     else{
       return 0;
@@ -194,11 +194,11 @@ public class RobotContainer {
     }
     //If Shooter Knob is at 2
     else if(knobValue >= 0.024 - threshold && knobValue < 024 + threshold){
-        speed = 1000;
+        speed = 3000;
     }
     //If Shooter Knob is at 3
     else if(knobValue >= 0.055 - threshold && knobValue < 0.024 + threshold){
-        speed = 3000;
+        speed = 4000;
     }
     //If Shooter Knob is at 4
     else if(knobValue >= 0.087 - threshold && knobValue < 0.087 + threshold){

@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -27,7 +28,9 @@ public class CellManipulation extends SubsystemBase {
   private final DigitalInput m_bottomSensor = new DigitalInput(CellManiputalionConstants.kBottomSensorPort);
 
   public CellManipulation() {
-  
+    m_intakeMotor.setNeutralMode(NeutralMode.Brake);
+    m_queueMotor.setNeutralMode(NeutralMode.Brake);
+    m_conveyorMotor.setNeutralMode(NeutralMode.Brake);
   }
 
   @Override

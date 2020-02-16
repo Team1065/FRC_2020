@@ -42,6 +42,10 @@ public class DriveSubsystem extends SubsystemBase {
     configureSpark(m_rightFrontMotor);
     configureSpark(m_rightBackMotor);
 
+    //Set only the back motors to brake to get a less aggressive 
+    m_leftBackMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_rightFrontMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
     try {
         m_gyro = new AHRS(SPI.Port.kMXP);
       } catch (RuntimeException ex ) {

@@ -41,6 +41,7 @@ public final class Constants {
         public static final int kMasterMotorPort = 5;//SPARK Max
         public static final int kSlaveMotorPort = 6;//SPARK Max
         public static final int kFeederMotorPort = 7;//SPARK Max
+        public static final int kHoodServoPort = 0;//PWM
 
         public static final int kEncoderCPR = 42; //NEO encoder 42 CPR
         public static final double kP = 0.000200;//TODO: Tune
@@ -51,6 +52,8 @@ public final class Constants {
         public static final double kMaxOutput = 1;
         public static final double kMinOutput = 0;
         public static final double kAllowedError  = 100;//TODO: Tune
+
+        public static final double kDefaultHoodAngle  = 0;//TODO: Tune
 
         public static final int kCurrentLimit  = 80;//TODO: Might need to tune
     }
