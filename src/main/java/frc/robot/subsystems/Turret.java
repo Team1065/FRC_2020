@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -21,6 +22,7 @@ public class Turret extends SubsystemBase {
   private final DigitalInput m_rightLimit = new DigitalInput(TurretConstants.kRightSensorPort);
 
   public Turret() {
+    m_turretMotor.setNeutralMode(NeutralMode.Brake);
   }
 
   @Override

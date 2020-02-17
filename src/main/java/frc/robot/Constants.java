@@ -51,7 +51,12 @@ public final class Constants {
         public static final double kFF = 0.000155;
         public static final double kMaxOutput = 1;
         public static final double kMinOutput = 0;
-        public static final double kAllowedError  = 100;//TODO: Tune
+        public static final double kAllowedError  = 150;//TODO: Tune
+
+        public static final double kShooterSpeed1 = 3000;
+        public static final double kShooterSpeed2 = 4000;
+        public static final double kShooterSpeed3 = 6000;
+
 
         public static final double kDefaultHoodAngle  = 0;//TODO: Tune
 
@@ -73,8 +78,8 @@ public final class Constants {
     public static final class TurretConstants {
         public static final int kTurretMotor = 4;//VictorSPX
 
-        public static final int kLeftSensorPort = 5;
-        public static final int kRightSensorPort = 6;
+        public static final int kLeftSensorPort = 6;
+        public static final int kRightSensorPort = 5;
     }
 
     public static final class OIConstants {

@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Lighting;
@@ -37,7 +39,7 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
   private final Turret m_turret = new Turret();
-  private final Lighting m_lighting = new Lighting();
+  //private final Lighting m_lighting = new Lighting();
 
   private final Joystick m_leftJoystick = new Joystick(OIConstants.kLeftjoystickPort);
   private final Joystick m_rightJoystick = new Joystick(OIConstants.kRightjoystickPort);
@@ -70,9 +72,9 @@ public class RobotContainer {
     //TODO: Update default command to change between drive mode and vision mode
     m_vision.setDefaultCommand(new RunCommand( () -> m_vision.updateStatus(), m_vision) );
 
-    //TODO: Update default command to m_shooter.setSetpoint(getDesiredShooterSpeed()); m_shooter.setHoodAngle(getDesiredShooterHoodAngle());
+    //TODO: Update default command to add m_shooter.setHoodAngle(getDesiredShooterHoodAngle());
     m_shooter.setDefaultCommand(
-      new RunCommand( () -> m_shooter.tune(), m_shooter) );
+      new RunCommand( () -> m_shooter.setSetpoint(getDesiredShooterSpeed()), m_shooter) );
 
     //TODO: Update default command to select between manual and vision movement
     m_turret.setDefaultCommand(
@@ -81,8 +83,8 @@ public class RobotContainer {
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
         double intakeSpeed = .4;
-        double queueSpeed = .5;
-        double conveyorSpeed = .5;
+        double queueSpeed = .45;
+        double conveyorSpeed = .65;
         if (m_copilotDS.getRawButton(OIConstants.kIntakeOutPort)){
           m_cellManipulation.setIntake(-intakeSpeed);
           m_cellManipulation.setQueue(-queueSpeed);
@@ -157,8 +159,8 @@ public class RobotContainer {
         }
 
         if(m_shooter.upToSpeed()){
-          m_cellManipulation.setQueue(.5);
-          m_cellManipulation.setConveyor(.5);
+          m_cellManipulation.setQueue(.45);
+          m_cellManipulation.setConveyor(.65);
         }
         else{
           m_cellManipulation.setQueue(0);
@@ -183,26 +185,25 @@ public class RobotContainer {
   }
 
   public double getDesiredShooterSpeed(){
-    //TODO: Tune
     double speed;
     double knobValue = m_copilotDS.getRawAxis(1);
     double threshold = 0.010;
-
+    
     //If Shooter Knob is at 1
     if(knobValue < 0 + threshold){
         speed = 0;
     }
     //If Shooter Knob is at 2
-    else if(knobValue >= 0.024 - threshold && knobValue < 024 + threshold){
-        speed = 3000;
+    else if(knobValue >= 0.024 - threshold && knobValue < 0.024 + threshold){
+        speed = ShooterConstants.kShooterSpeed1;
     }
     //If Shooter Knob is at 3
-    else if(knobValue >= 0.055 - threshold && knobValue < 0.024 + threshold){
-        speed = 4000;
+    else if(knobValue >= 0.055 - threshold && knobValue < 0.055 + threshold){
+        speed = ShooterConstants.kShooterSpeed2;
     }
     //If Shooter Knob is at 4
     else if(knobValue >= 0.087 - threshold && knobValue < 0.087 + threshold){
-        speed = 6000;
+        speed = ShooterConstants.kShooterSpeed3;
     }
     else
     {
