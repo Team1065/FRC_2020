@@ -29,7 +29,8 @@ public class Shooter extends SubsystemBase {
   private final CANEncoder m_encoder;
   private double m_kP, m_kI, m_kD, m_kIZone, m_kFF, m_setpoint, m_setHoodAngle;
 
-  private Servo m_hoodServo = new Servo(ShooterConstants.kHoodServoPort);
+  private Servo m_hoodServo1 = new Servo(ShooterConstants.kHoodServo1Port);
+  private Servo m_hoodServo2 = new Servo(ShooterConstants.kHoodServo2Port);
 
   public Shooter() {
     configureSpark(m_masterMotor);
@@ -82,7 +83,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setHoodAngle(double angle){
-    m_hoodServo.setAngle(angle);
+    m_hoodServo1.setAngle(angle);
+    m_hoodServo2.setAngle(angle);
   }
 
   public boolean upToSpeed() {
@@ -113,6 +115,6 @@ public class Shooter extends SubsystemBase {
 
   public void updateStatus(){
     SmartDashboard.putNumber("[Shooter] Velocity", m_encoder.getVelocity());
-    SmartDashboard.putNumber("[Shooter] Hood Angle", m_hoodServo.getAngle());
+    SmartDashboard.putNumber("[Shooter] Hood Angle", m_hoodServo1.getAngle());
   }
 }

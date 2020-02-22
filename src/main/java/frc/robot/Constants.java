@@ -41,21 +41,22 @@ public final class Constants {
         public static final int kMasterMotorPort = 5;//SPARK Max
         public static final int kSlaveMotorPort = 6;//SPARK Max
         public static final int kFeederMotorPort = 7;//SPARK Max
-        public static final int kHoodServoPort = 0;//PWM
+        public static final int kHoodServo1Port = 0;//PWM
+        public static final int kHoodServo2Port = 1;//PWM
 
         public static final int kEncoderCPR = 42; //NEO encoder 42 CPR
-        public static final double kP = 0.000200;//TODO: Tune
+        public static final double kP = 0.000230;//TODO: Tune
         public static final double kI = 0.000001;
         public static final double kD = 0;
-        public static final double kIZone = 300;
-        public static final double kFF = 0.000155;
+        public static final double kIZone = 330;
+        public static final double kFF = 0.000165;
         public static final double kMaxOutput = 1;
         public static final double kMinOutput = 0;
-        public static final double kAllowedError  = 150;//TODO: Tune
+        public static final double kAllowedError  = 00;//TODO: Tune
 
         public static final double kShooterSpeed1 = 3000;
         public static final double kShooterSpeed2 = 4000;
-        public static final double kShooterSpeed3 = 6000;
+        public static final double kShooterSpeed3 = 5000;
 
         public static final double kShooterHoodAngle1 = 0;//TODO: Tune
         public static final double kShooterHoodAngle2 = 0;//TODO: Tune
@@ -85,7 +86,7 @@ public final class Constants {
         public static final int kLeftSensorPort = 6;
         public static final int kRightSensorPort = 5;
 
-        public static final double kP  = 0.07;//TODO: Tune
+        public static final double kP  = 0.05;//TODO: Tune
     }
 
     public static final class ClimberConstants {

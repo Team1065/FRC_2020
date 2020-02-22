@@ -36,16 +36,26 @@ public class Vision extends SubsystemBase {
     updateStatus();
   }
 
-  public boolean isTargetValid(){
-    return tv.getBoolean(false);
+  public double isTargetValid(){
+    return tv.getDouble(0.0);
   }
 
   public double getTargetHorizontalOffset(){
-    return tx.getDouble(0.0);
+    if(isTargetValid()>0.5){
+      return tx.getDouble(0.0);
+    }
+    else{
+      return 0;
+    }
   }
 
   public double getTargetVerticalOffset(){
-    return ty.getDouble(0.0);
+    if(isTargetValid()>0.5){
+      return ty.getDouble(0.0);
+    }
+    else{
+      return 0;
+    }
   }
 
   public double getTargetArea(){
@@ -60,7 +70,7 @@ public class Vision extends SubsystemBase {
     else{
       //vision mode
       camMode.setNumber(0);
-      ledMode.setNumber(0);
+      ledMode.setNumber(3);
     }
   }
 
@@ -74,9 +84,9 @@ public class Vision extends SubsystemBase {
   }
 
   public void updateStatus(){
-    SmartDashboard.putBoolean("[Vision] Valid Target", isTargetValid());
-    SmartDashboard.putNumber("[Vision] Target Horizontal Offset", getTargetHorizontalOffset());
-    SmartDashboard.putNumber("[Vision] Target Vertical Offset", getTargetVerticalOffset());
+    SmartDashboard.putNumber("[Vision] Valid Target", isTargetValid());
+    SmartDashboard.putNumber("[Vision] Target Horizontal Offset", tx.getDouble(0.0));
+    SmartDashboard.putNumber("[Vision] Target Vertical Offset", ty.getDouble(0.0));
     SmartDashboard.putNumber("[Vision] Target Area", getTargetArea());
     SmartDashboard.putNumber("[Vision] Distance", getDistance());
   }

@@ -88,6 +88,7 @@ public class RobotContainer {
 
     m_shooter.setDefaultCommand(
       new RunCommand( () -> {
+        //m_shooter.tune();
         m_shooter.setSetpoint(getDesiredShooterSpeed());
         //m_shooter.setHoodAngle(getDesiredShooterHoodAngle()); TODO: Uncomment once we have the values tuned
       }, m_shooter) );
@@ -98,20 +99,19 @@ public class RobotContainer {
           //vision Control
           double headingError = m_vision.getTargetHorizontalOffset();
           double turretSpeed = TurretConstants.kP * headingError;
-          double minSpeed = 0.2;//TODO: tune
-          double treshold = 2;//TODO: tune
+          double minSpeed = 0.09;//TODO: tune
+          double treshold = 0.25;//TODO: tune
 
           //if we are not within the treshold and the set speed is too low set it to min speed
-          if(Math.abs(turretSpeed) < minSpeed && headingError > treshold){
+          if(Math.abs(turretSpeed) < minSpeed && Math.abs(headingError) > treshold){
             if(turretSpeed < 0){
               turretSpeed = -minSpeed;
             }
             else{
               turretSpeed = minSpeed;
             }
-            m_turret.setSpeed(turretSpeed);
           }
-          
+          m_turret.setSpeed(turretSpeed);
         }
         else{
           //Manual Control
@@ -122,9 +122,9 @@ public class RobotContainer {
 
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
-        double intakeSpeed = .4;
-        double queueSpeed = .45;
-        double conveyorSpeed = .65;
+        double intakeSpeed = .5;
+        double queueSpeed = .35;
+        double conveyorSpeed = .7;
         if (m_copilotDS.getRawButton(OIConstants.kIntakeOutPort)){
           m_cellManipulation.setIntake(-intakeSpeed);
           m_cellManipulation.setQueue(-queueSpeed);
@@ -227,8 +227,8 @@ public class RobotContainer {
         }
 
         if(m_shooter.upToSpeed()){
-          m_cellManipulation.setQueue(.45);
-          m_cellManipulation.setConveyor(.65);
+          m_cellManipulation.setQueue(.35);
+          m_cellManipulation.setConveyor(.7);
         }
         else{
           m_cellManipulation.setQueue(0);
@@ -252,12 +252,13 @@ public class RobotContainer {
   }
 
   public double getDesiredClimberSpeed(){
-    double ClimberStickY = -m_copilotDS.getRawAxis(OIConstants.kClimberJoystickYPort);
+    double ClimberStickY = m_copilotDS.getRawAxis(OIConstants.kClimberJoystickYPort);
+    SmartDashboard.putNumber("[Climber] Stick Y", ClimberStickY);
     if(ClimberStickY < 0.035){
-      return -0.5;
+      return -0.2;
     }
     else if(ClimberStickY > 0.075){
-      return 0.5;
+      return 0.3;
     }
     else{
       return 0;
