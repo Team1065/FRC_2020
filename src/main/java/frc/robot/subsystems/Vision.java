@@ -52,6 +52,18 @@ public class Vision extends SubsystemBase {
     return ta.getDouble(0.0);
   }
 
+  public void setDriveMode(boolean drive){
+    if(drive){
+      camMode.setNumber(1);
+      ledMode.setNumber(1);
+    }
+    else{
+      //vision mode
+      camMode.setNumber(0);
+      ledMode.setNumber(0);
+    }
+  }
+
   public double getDistance(){
     //TODO: update values
     double heightOfCamera = 43;

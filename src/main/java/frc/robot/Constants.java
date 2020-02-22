@@ -57,6 +57,10 @@ public final class Constants {
         public static final double kShooterSpeed2 = 4000;
         public static final double kShooterSpeed3 = 6000;
 
+        public static final double kShooterHoodAngle1 = 0;//TODO: Tune
+        public static final double kShooterHoodAngle2 = 0;//TODO: Tune
+        public static final double kShooterHoodAngle3 = 0;//TODO: Tune
+
 
         public static final double kDefaultHoodAngle  = 0;//TODO: Tune
 
@@ -80,6 +84,8 @@ public final class Constants {
 
         public static final int kLeftSensorPort = 6;
         public static final int kRightSensorPort = 5;
+
+        public static final double kP  = 0.07;//TODO: Tune
     }
 
     public static final class OIConstants {
@@ -92,6 +98,7 @@ public final class Constants {
         public static final int kshootPort = 1;
 
         //copilot inputs
+        public static final int kVisionSwitchPort = 1;//old climber switch
         public static final int kIntakeInPort = 4;
         public static final int kIntakeOutPort = 5;
         public static final int kTurretJoystickXPort = 4;

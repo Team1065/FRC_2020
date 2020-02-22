@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.TurretConstants;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Lighting;
@@ -69,16 +70,51 @@ public class RobotContainer {
     m_drive.setDefaultCommand(
       new RunCommand( () -> m_drive.tankDrive(-m_leftJoystick.getY(), -m_rightJoystick.getY()) , m_drive) );
 
-    //TODO: Update default command to change between drive mode and vision mode
-    m_vision.setDefaultCommand(new RunCommand( () -> m_vision.updateStatus(), m_vision) );
+    m_vision.setDefaultCommand(new RunCommand( () -> {
+      m_vision.updateStatus();
+      if(m_copilotDS.getRawButton(OIConstants.kVisionSwitchPort)){
+        //vision Mode
+        m_vision.setDriveMode(false);
+      }
+      else{
+        //Drive Mode
+        m_vision.setDriveMode(true);
+      }
+    }, m_vision) );
 
-    //TODO: Update default command to add m_shooter.setHoodAngle(getDesiredShooterHoodAngle());
     m_shooter.setDefaultCommand(
-      new RunCommand( () -> m_shooter.setSetpoint(getDesiredShooterSpeed()), m_shooter) );
+      new RunCommand( () -> {
+        m_shooter.setSetpoint(getDesiredShooterSpeed());
+        //m_shooter.setHoodAngle(getDesiredShooterHoodAngle()); TODO: Uncomment once we have the values tuned
+      }, m_shooter) );
 
-    //TODO: Update default command to select between manual and vision movement
     m_turret.setDefaultCommand(
-      new RunCommand( () -> m_turret.setSpeed(getDesiredTurretSpeed()), m_turret) );
+      new RunCommand( () ->{
+        if(m_copilotDS.getRawButton(OIConstants.kVisionSwitchPort)){
+          //vision Control
+          double headingError = m_vision.getTargetHorizontalOffset();
+          double turretSpeed = TurretConstants.kP * headingError;
+          double minSpeed = 0.2;//TODO: tune
+          double treshold = 2;//TODO: tune
+
+          //if we are not within the treshold and the set speed is too low set it to min speed
+          if(Math.abs(turretSpeed) < minSpeed && headingError > treshold){
+            if(turretSpeed < 0){
+              turretSpeed = -minSpeed;
+            }
+            else{
+              turretSpeed = minSpeed;
+            }
+            m_turret.setSpeed(turretSpeed);
+          }
+          
+        }
+        else{
+          //Manual Control
+          m_turret.setSpeed(getDesiredTurretSpeed());
+        }
+        
+      }, m_turret) );
 
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
@@ -171,7 +207,6 @@ public class RobotContainer {
   }
 
   public double getDesiredTurretSpeed(){
-    //TODO: Tune
     double turretStickX = m_copilotDS.getRawAxis(OIConstants.kTurretJoystickXPort);
     if(turretStickX < 0.03){
       return -0.5;
@@ -182,6 +217,35 @@ public class RobotContainer {
     else{
       return 0;
     }
+  }
+
+  public double getDesiredShooterHoodAngle(){
+    double angle;
+    double knobValue = m_copilotDS.getRawAxis(1);
+    double threshold = 0.010;
+    
+    //If Shooter Knob is at 1
+    if(knobValue < 0 + threshold){
+      angle = 0;
+    }
+    //If Shooter Knob is at 2
+    else if(knobValue >= 0.024 - threshold && knobValue < 0.024 + threshold){
+      angle = ShooterConstants.kShooterHoodAngle1;
+    }
+    //If Shooter Knob is at 3
+    else if(knobValue >= 0.055 - threshold && knobValue < 0.055 + threshold){
+      angle = ShooterConstants.kShooterHoodAngle2;
+    }
+    //If Shooter Knob is at 4
+    else if(knobValue >= 0.087 - threshold && knobValue < 0.087 + threshold){
+      angle = ShooterConstants.kShooterHoodAngle3;
+    }
+    else
+    {
+      angle = 0;
+    }
+  
+    return angle;
   }
 
   public double getDesiredShooterSpeed(){
