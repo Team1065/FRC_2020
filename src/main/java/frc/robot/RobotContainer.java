@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
@@ -16,11 +17,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.subsystems.CellManipulation;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Lighting;
 import frc.robot.subsystems.Shooter;
@@ -40,6 +43,7 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
   private final Turret m_turret = new Turret();
+  private final Climber m_climber = new Climber();
   //private final Lighting m_lighting = new Lighting();
 
   private final Joystick m_leftJoystick = new Joystick(OIConstants.kLeftjoystickPort);
@@ -168,8 +172,36 @@ public class RobotContainer {
           m_cellManipulation.setConveyor(0);
         }
       }
-      , m_cellManipulation)
-    );
+      , m_cellManipulation));
+
+      m_climber.setDefaultCommand(
+        new RunCommand( () -> {
+          //Are we on the field?
+          if(DriverStation.getInstance().isFMSAttached()){
+            double commandedSpeed = getDesiredClimberSpeed();
+            //only go one direction on the field
+            if(commandedSpeed < 0){
+              commandedSpeed = 0;
+            }
+
+            //if we are looking for the bottom sensor and it is active then stop the climber
+            if(m_climber.lookForBottomSwitch() && m_climber.getBottomSensorActive()){
+              commandedSpeed = 0;
+            }
+            
+            m_climber.setClimberSpeed(commandedSpeed);
+          }
+          else{
+            //We are on the PIT
+            //only move climber if the compressor switch is set
+            if(m_copilotDS.getRawButton(OIConstants.kClimberSwitchPort)){
+              m_climber.setClimberSpeed(getDesiredClimberSpeed());
+            }
+            else{
+              m_climber.setClimberSpeed(0);
+            }
+          }
+        }, m_climber));
   }
 
   /**
@@ -212,6 +244,19 @@ public class RobotContainer {
       return -0.5;
     }
     else if(turretStickX > 0.07){
+      return 0.5;
+    }
+    else{
+      return 0;
+    }
+  }
+
+  public double getDesiredClimberSpeed(){
+    double ClimberStickY = -m_copilotDS.getRawAxis(OIConstants.kClimberJoystickYPort);
+    if(ClimberStickY < 0.035){
+      return -0.5;
+    }
+    else if(ClimberStickY > 0.075){
       return 0.5;
     }
     else{

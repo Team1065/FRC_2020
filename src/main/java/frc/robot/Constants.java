@@ -88,6 +88,15 @@ public final class Constants {
         public static final double kP  = 0.07;//TODO: Tune
     }
 
+    public static final class ClimberConstants {
+        public static final int kClimberMasterMotor = 5;//VictorSPX
+        public static final int kClimberSlaveMotor = 6;//VictorSPX
+
+        public static final int kBottomSensorPort = 7;
+
+        public static final double kP  = 0.07;//TODO: Tune
+    }
+
     public static final class OIConstants {
         public static final int kLeftjoystickPort = 0;
         public static final int kRightjoystickPort = 1;
@@ -99,8 +108,10 @@ public final class Constants {
 
         //copilot inputs
         public static final int kVisionSwitchPort = 1;//old climber switch
+        public static final int kClimberSwitchPort = 2;//old Compressor switch
         public static final int kIntakeInPort = 4;
         public static final int kIntakeOutPort = 5;
         public static final int kTurretJoystickXPort = 4;
+        public static final int kClimberJoystickYPort = 2;
     }
 }
