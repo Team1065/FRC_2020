@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -24,6 +25,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final CANSparkMax m_leftBackMotor = new CANSparkMax (DriveConstants.kLeftBackMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_rightFrontMotor = new CANSparkMax (DriveConstants.kRightFrontMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_rightBackMotor = new CANSparkMax (DriveConstants.kRightBackMotorPort, MotorType.kBrushless);
+
+  private final CANEncoder m_encoder;
 
   private AHRS m_gyro;
 
@@ -45,6 +48,8 @@ public class DriveSubsystem extends SubsystemBase {
     //Set only the back motors to brake to get a less aggressive 
     m_leftBackMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_rightFrontMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+    m_encoder = m_leftFrontMotor.getEncoder();
 
     try {
         m_gyro = new AHRS(SPI.Port.kMXP);
@@ -93,7 +98,16 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
+  public double getDistance(){
+    return m_encoder.getPosition();
+  }
+
+  public void resetEncoder(){
+    m_encoder.setPosition(0);
+  }
+
   public void updateStatus(){
     SmartDashboard.putNumber("[DT] Heading", getHeading());
+    SmartDashboard.putNumber("[DT] Distance", getDistance());
   }
 }

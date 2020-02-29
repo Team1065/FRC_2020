@@ -11,17 +11,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.commands.Auto1;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
@@ -45,6 +46,9 @@ public class RobotContainer {
   private final Turret m_turret = new Turret();
   private final Climber m_climber = new Climber();
   //private final Lighting m_lighting = new Lighting();
+
+  // A chooser for autonomous commands
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   private final Joystick m_leftJoystick = new Joystick(OIConstants.kLeftjoystickPort);
   private final Joystick m_rightJoystick = new Joystick(OIConstants.kRightjoystickPort);
@@ -71,9 +75,16 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    // Add commands to the autonomous command chooser
+    m_chooser.setDefaultOption("Default Auto", new Auto1(m_shooter, m_cellManipulation, m_drive));
+    m_chooser.addOption("Auto1", new Auto1(m_shooter, m_cellManipulation, m_drive));
+    SmartDashboard.putData("Auto modes", m_chooser);
+    
+    //default drive
     m_drive.setDefaultCommand(
       new RunCommand( () -> m_drive.tankDrive(-m_leftJoystick.getY(), -m_rightJoystick.getY()) , m_drive) );
 
+    //default Vision
     m_vision.setDefaultCommand(new RunCommand( () -> {
       m_vision.updateStatus();
       if(m_copilotDS.getRawButton(OIConstants.kVisionSwitchPort)){
@@ -86,6 +97,7 @@ public class RobotContainer {
       }
     }, m_vision) );
 
+    //default shooter
     m_shooter.setDefaultCommand(
       new RunCommand( () -> {
         //m_shooter.tune();
@@ -93,14 +105,15 @@ public class RobotContainer {
         //m_shooter.setHoodAngle(getDesiredShooterHoodAngle()); TODO: Uncomment once we have the values tuned
       }, m_shooter) );
 
+    //default turret
     m_turret.setDefaultCommand(
       new RunCommand( () ->{
         if(m_copilotDS.getRawButton(OIConstants.kVisionSwitchPort)){
           //vision Control
           double headingError = m_vision.getTargetHorizontalOffset();
           double turretSpeed = TurretConstants.kP * headingError;
-          double minSpeed = 0.09;//TODO: tune
-          double treshold = 0.25;//TODO: tune
+          double minSpeed = 0.09;
+          double treshold = 0.25;
 
           //if we are not within the treshold and the set speed is too low set it to min speed
           if(Math.abs(turretSpeed) < minSpeed && Math.abs(headingError) > treshold){
@@ -120,60 +133,14 @@ public class RobotContainer {
         
       }, m_turret) );
 
+    //default cell manipulation
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
-        double intakeSpeed = .5;
-        double queueSpeed = .35;
-        double conveyorSpeed = .7;
-        if (m_copilotDS.getRawButton(OIConstants.kIntakeOutPort)){
-          m_cellManipulation.setIntake(-intakeSpeed);
-          m_cellManipulation.setQueue(-queueSpeed);
-          m_cellManipulation.setConveyor(-conveyorSpeed);
-        }
-        else if (m_copilotDS.getRawButton(OIConstants.kIntakeInPort)){
-          if (m_cellManipulation.getHighestSensorActive() < 2){
-            //get cells into the conveyor if there are non there yet
-            m_cellManipulation.setIntake(intakeSpeed);
-            m_cellManipulation.setQueue(queueSpeed);
-            m_cellManipulation.setConveyor(conveyorSpeed);
-          }
-          else if (m_cellManipulation.getHighestSensorActive() < 5){
-            if(m_cellManipulation.getBottomSensor()){
-              //move cells up if there is space in the conveyor and there is a cell in the queue
-              m_cellManipulation.setIntake(intakeSpeed);
-              m_cellManipulation.setQueue(queueSpeed);
-              m_cellManipulation.setConveyor(conveyorSpeed);
-            }
-            else{
-              //stop the conveyor until there is a cell in the to be queued
-              m_cellManipulation.setIntake(intakeSpeed);
-              m_cellManipulation.setQueue(queueSpeed);
-              m_cellManipulation.setConveyor(0);
-            }
-          }
-          else{
-            if(m_cellManipulation.getBottomSensor()){
-              //reverse intake since the conveyor is full and there is a cell in the queue
-              m_cellManipulation.setIntake(-intakeSpeed);
-              m_cellManipulation.setQueue(0);
-              m_cellManipulation.setConveyor(0);
-            }
-            else{
-              //queue the last cell
-              m_cellManipulation.setIntake(intakeSpeed);
-              m_cellManipulation.setQueue(queueSpeed);
-              m_cellManipulation.setConveyor(0);
-            }
-          }
-        }
-        else{
-          m_cellManipulation.setIntake(0);
-          m_cellManipulation.setQueue(0);
-          m_cellManipulation.setConveyor(0);
-        }
+        m_cellManipulation.sensorControl(m_copilotDS.getRawButton(OIConstants.kIntakeInPort), m_copilotDS.getRawButton(OIConstants.kIntakeOutPort));
       }
       , m_cellManipulation));
-
+      
+      //default climber
       m_climber.setDefaultCommand(
         new RunCommand( () -> {
           //Are we on the field?
@@ -226,9 +193,11 @@ public class RobotContainer {
           m_cellManipulation.setIntake(0);
         }
 
-        if(m_shooter.upToSpeed()){
+        //Dont check if we are at speed just that it has been commanded to something other than 0 to maintain a smoother shooting stream
+        //Might want to slow down the conveyor and queue speed if we are feeding the balls too quickly
+        if(getDesiredShooterSpeed() > 100){
           m_cellManipulation.setQueue(.35);
-          m_cellManipulation.setConveyor(.7);
+          m_cellManipulation.setConveyor(.45);
         }
         else{
           m_cellManipulation.setQueue(0);
@@ -271,7 +240,7 @@ public class RobotContainer {
     double threshold = 0.010;
     
     //If Shooter Knob is at 1
-    if(knobValue < 0 + threshold){
+    if(knobValue < 0.024 - threshold){
       angle = 0;
     }
     //If Shooter Knob is at 2
@@ -279,11 +248,11 @@ public class RobotContainer {
       angle = ShooterConstants.kShooterHoodAngle1;
     }
     //If Shooter Knob is at 3
-    else if(knobValue >= 0.055 - threshold && knobValue < 0.055 + threshold){
+    else if(knobValue >= 0.024 + threshold && knobValue < 0.055 + threshold){
       angle = ShooterConstants.kShooterHoodAngle2;
     }
     //If Shooter Knob is at 4
-    else if(knobValue >= 0.087 - threshold && knobValue < 0.087 + threshold){
+    else if(knobValue >= 0.055 + threshold){
       angle = ShooterConstants.kShooterHoodAngle3;
     }
     else
@@ -300,7 +269,7 @@ public class RobotContainer {
     double threshold = 0.010;
     
     //If Shooter Knob is at 1
-    if(knobValue < 0 + threshold){
+    if(knobValue < 0.024 - threshold){
         speed = 0;
     }
     //If Shooter Knob is at 2
@@ -308,11 +277,11 @@ public class RobotContainer {
         speed = ShooterConstants.kShooterSpeed1;
     }
     //If Shooter Knob is at 3
-    else if(knobValue >= 0.055 - threshold && knobValue < 0.055 + threshold){
+    else if(knobValue >= 0.024 + threshold && knobValue < 0.055 + threshold){
         speed = ShooterConstants.kShooterSpeed2;
     }
     //If Shooter Knob is at 4
-    else if(knobValue >= 0.087 - threshold && knobValue < 0.087 + threshold){
+    else if(knobValue >= 0.055 + threshold){
         speed = ShooterConstants.kShooterSpeed3;
     }
     else
@@ -331,6 +300,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new InstantCommand();
+    //todo pick auto mode from dashboard
+    return m_chooser.getSelected();
   }
 }

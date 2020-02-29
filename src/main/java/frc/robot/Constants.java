@@ -52,15 +52,15 @@ public final class Constants {
         public static final double kFF = 0.000165;
         public static final double kMaxOutput = 1;
         public static final double kMinOutput = 0;
-        public static final double kAllowedError  = 00;//TODO: Tune
+        public static final double kAllowedError  = 300;//TODO: Tune
 
         public static final double kShooterSpeed1 = 3000;
         public static final double kShooterSpeed2 = 4000;
-        public static final double kShooterSpeed3 = 5000;
+        public static final double kShooterSpeed3 = 5500;
 
         public static final double kShooterHoodAngle1 = 0;//TODO: Tune
-        public static final double kShooterHoodAngle2 = 0;//TODO: Tune
-        public static final double kShooterHoodAngle3 = 0;//TODO: Tune
+        public static final double kShooterHoodAngle2 = 0.5;//TODO: Tune
+        public static final double kShooterHoodAngle3 = 1;//TODO: Tune
 
 
         public static final double kDefaultHoodAngle  = 0;//TODO: Tune

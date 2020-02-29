@@ -45,6 +45,9 @@ public class Shooter extends SubsystemBase {
     m_slaveMotor.follow(m_masterMotor, true);
     m_feederMotor.follow(m_masterMotor);
 
+    m_hoodServo1.setBounds(2, 0, 0, 0, 1);
+    m_hoodServo2.setBounds(2, 0, 0, 0, 1);
+
     m_pidController = m_masterMotor.getPIDController();
     m_encoder = m_masterMotor.getEncoder();
 
@@ -62,7 +65,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("[Shooter] I Zone", ShooterConstants.kIZone);
     SmartDashboard.putNumber("[Shooter] Feed Forward", ShooterConstants.kFF);
     SmartDashboard.putNumber("[Shooter] Setpoint", 0);
-    SmartDashboard.putNumber("[Shooter] Tune Hood Angle", ShooterConstants.kDefaultHoodAngle);
+    SmartDashboard.putNumber("[Shooter] Tune Hood Value(0-1)", ShooterConstants.kDefaultHoodAngle);
   }
 
   private void configureSpark(CANSparkMax sparkMax) {
@@ -83,8 +86,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setHoodAngle(double angle){
-    m_hoodServo1.setAngle(angle);
-    m_hoodServo2.setAngle(angle);
+    m_hoodServo1.set(angle);
+    m_hoodServo2.set(angle);
   }
 
   public boolean upToSpeed() {
@@ -100,7 +103,7 @@ public class Shooter extends SubsystemBase {
     double iZone = SmartDashboard.getNumber("[Shooter] I Zone", ShooterConstants.kIZone);
     double ff = SmartDashboard.getNumber("[Shooter] Feed Forward", ShooterConstants.kFF);
     double setpoint = SmartDashboard.getNumber("[Shooter] Setpoint", 0);
-    double hoodAngle = SmartDashboard.getNumber("[Shooter] Tune Hood Angle", ShooterConstants.kDefaultHoodAngle);
+    double hoodAngle = SmartDashboard.getNumber("[Shooter] Tune Hood Value(0-1)", ShooterConstants.kDefaultHoodAngle);
 
     // if PID coefficients on SmartDashboard have changed, write new values to controller
     if((p != m_kP)) { m_pidController.setP(p); m_kP = p; }
@@ -115,6 +118,6 @@ public class Shooter extends SubsystemBase {
 
   public void updateStatus(){
     SmartDashboard.putNumber("[Shooter] Velocity", m_encoder.getVelocity());
-    SmartDashboard.putNumber("[Shooter] Hood Angle", m_hoodServo1.getAngle());
+    SmartDashboard.putNumber("[Shooter] Hood Angle", m_hoodServo1.get());
   }
 }

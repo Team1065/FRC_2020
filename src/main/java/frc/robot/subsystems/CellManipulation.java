@@ -80,4 +80,56 @@ public class CellManipulation extends SubsystemBase {
     SmartDashboard.putNumber("[CM] Highest Sensor Active", getHighestSensorActive());
     SmartDashboard.putBoolean("[CM] Bottom Sensor Active", getBottomSensor());
   }
+
+  public void sensorControl(boolean intakeIn, boolean intakeOut){
+    double intakeSpeed = .45;
+    double queueSpeed = .35;
+    double conveyorSpeed = .65;
+    if (intakeOut){
+      setIntake(-intakeSpeed);
+      setQueue(-queueSpeed);
+      setConveyor(-conveyorSpeed);
+    }
+    else if (intakeIn){
+      if (getHighestSensorActive() < 2){
+        //get cells into the conveyor if there are non there yet
+        setIntake(intakeSpeed);
+        setQueue(queueSpeed);
+        setConveyor(conveyorSpeed);
+      }
+      else if (getHighestSensorActive() < 5){
+        if(getBottomSensor()){
+          //move cells up if there is space in the conveyor and there is a cell in the queue
+          setIntake(intakeSpeed);
+          setQueue(queueSpeed);
+          setConveyor(conveyorSpeed);
+        }
+        else{
+          //stop the conveyor until there is a cell in the to be queued
+          setIntake(intakeSpeed);
+          setQueue(queueSpeed);
+          setConveyor(0);
+        }
+      }
+      else{
+        if(getBottomSensor()){
+          //reverse intake since the conveyor is full and there is a cell in the queue
+          setIntake(-intakeSpeed);
+          setQueue(0);
+          setConveyor(0);
+        }
+        else{
+          //queue the last cell
+          setIntake(intakeSpeed);
+          setQueue(queueSpeed);
+          setConveyor(0);
+        }
+      }
+    }
+    else{
+      setIntake(0);
+      setQueue(0);
+      setConveyor(0);
+    }
+  }
 }
