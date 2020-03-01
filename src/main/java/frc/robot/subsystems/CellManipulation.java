@@ -31,6 +31,8 @@ public class CellManipulation extends SubsystemBase {
     m_intakeMotor.setNeutralMode(NeutralMode.Brake);
     m_queueMotor.setNeutralMode(NeutralMode.Brake);
     m_conveyorMotor.setNeutralMode(NeutralMode.Brake);
+
+    m_intakeMotor.setInverted(true);
   }
 
   @Override
@@ -83,8 +85,8 @@ public class CellManipulation extends SubsystemBase {
 
   public void sensorControl(boolean intakeIn, boolean intakeOut){
     double intakeSpeed = .45;
-    double queueSpeed = .35;
-    double conveyorSpeed = .65;
+    double queueSpeed = .4;
+    double conveyorSpeed = .6;
     if (intakeOut){
       setIntake(-intakeSpeed);
       setQueue(-queueSpeed);

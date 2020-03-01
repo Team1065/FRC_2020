@@ -29,24 +29,7 @@ public class Auto1 extends SequentialCommandGroup {
     super(
       new ResetDriveSensors(drive),
       //set shooter speed and shoot once it is up to speed for x seconds
-      new ParallelRaceGroup(
-        new SetShooterSpeed(4000, 0, shooter),
-        new SequentialCommandGroup(
-          new WaitUntilCommand(shooter::upToSpeed),
-          new Shoot(cellManipulation).withTimeout(3)
-        )
-      ),
-      //set intake in and drive to pick up a group of cells
-      new ParallelRaceGroup(
-        new IntakeIn(cellManipulation),
-        new SequentialCommandGroup(
-          new TurnToAngle(-150, drive),
-          new DriveToDistance(50, drive),
-          new WaitCommand(1),
-          new DriveToDistance(-50, drive),
-          new TurnToAngle(0, drive)
-        )
-      ),
+      /*
       new ParallelRaceGroup(
         new SetShooterSpeed(4000, 0, shooter),
         new SequentialCommandGroup(
@@ -54,6 +37,26 @@ public class Auto1 extends SequentialCommandGroup {
           new Shoot(cellManipulation).withTimeout(3)
         )
       )
+      ,*/
+      //set intake in and drive to pick up a group of cells
+      new ParallelRaceGroup(
+        //new IntakeIn(cellManipulation),
+        new SequentialCommandGroup(
+          new TurnToAngle(-45, drive),
+          new DriveToDistance(-20, drive),
+          new WaitCommand(1),
+          new DriveToDistance(20, drive),
+          new WaitCommand(1),
+          new TurnToAngle(0, drive)
+        )
+      )/*,
+      new ParallelRaceGroup(
+        new SetShooterSpeed(4000, 0, shooter),
+        new SequentialCommandGroup(
+          new WaitUntilCommand(shooter::upToSpeed),
+          new Shoot(cellManipulation).withTimeout(3)
+        )
+      )*/
     );
   }
 }

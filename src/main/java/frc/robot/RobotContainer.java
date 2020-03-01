@@ -102,7 +102,7 @@ public class RobotContainer {
       new RunCommand( () -> {
         //m_shooter.tune();
         m_shooter.setSetpoint(getDesiredShooterSpeed());
-        //m_shooter.setHoodAngle(getDesiredShooterHoodAngle()); TODO: Uncomment once we have the values tuned
+        m_shooter.setHoodAngle(getDesiredShooterHoodAngle());
       }, m_shooter) );
 
     //default turret
@@ -196,8 +196,8 @@ public class RobotContainer {
         //Dont check if we are at speed just that it has been commanded to something other than 0 to maintain a smoother shooting stream
         //Might want to slow down the conveyor and queue speed if we are feeding the balls too quickly
         if(getDesiredShooterSpeed() > 100){
-          m_cellManipulation.setQueue(.35);
-          m_cellManipulation.setConveyor(.45);
+          m_cellManipulation.setQueue(.4);
+          m_cellManipulation.setConveyor(.6);
         }
         else{
           m_cellManipulation.setQueue(0);
@@ -224,10 +224,10 @@ public class RobotContainer {
     double ClimberStickY = m_copilotDS.getRawAxis(OIConstants.kClimberJoystickYPort);
     SmartDashboard.putNumber("[Climber] Stick Y", ClimberStickY);
     if(ClimberStickY < 0.035){
-      return -0.2;
+      return -0.8;
     }
     else if(ClimberStickY > 0.075){
-      return 0.3;
+      return 0.8;
     }
     else{
       return 0;

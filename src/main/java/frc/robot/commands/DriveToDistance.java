@@ -13,7 +13,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveToDistance extends CommandBase {
   private DriveSubsystem m_drive;
-  private PIDController distancePID = new PIDController(0.001, 0, 0);//TODO: tune
+  private PIDController distancePID = new PIDController(0.085, 0, 0);//TODO: tune
   private PIDController rotationPID = new PIDController(0.1, 0, 0.005);//TODO: tune
 
   public DriveToDistance(double targetDistance, DriveSubsystem drive) {
@@ -21,7 +21,7 @@ public class DriveToDistance extends CommandBase {
     m_drive = drive;
     addRequirements(drive);
     distancePID.setSetpoint(targetDistance);
-    distancePID.setTolerance(1, 1);//TODO: tune
+    distancePID.setTolerance(2, 1);//TODO: tune
   }
 
   // Called when the command is initially scheduled.

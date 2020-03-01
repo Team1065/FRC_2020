@@ -59,8 +59,8 @@ public final class Constants {
         public static final double kShooterSpeed3 = 5500;
 
         public static final double kShooterHoodAngle1 = 0;//TODO: Tune
-        public static final double kShooterHoodAngle2 = 0.5;//TODO: Tune
-        public static final double kShooterHoodAngle3 = 1;//TODO: Tune
+        public static final double kShooterHoodAngle2 = 0;//TODO: Tune
+        public static final double kShooterHoodAngle3 = 0;//TODO: Tune
 
 
         public static final double kDefaultHoodAngle  = 0;//TODO: Tune
@@ -114,5 +114,21 @@ public final class Constants {
         public static final int kIntakeOutPort = 5;
         public static final int kTurretJoystickXPort = 4;
         public static final int kClimberJoystickYPort = 2;
+    }
+
+    public static final class LightingConstants {
+
+        public static final int backLeft_LEDPin = 5;
+        public static final int backRight_LEDPin = 6;
+        public static final int frontLeft_LEDPin = 7;
+        public static final int frontRight_LEDPin = 8;
+        public static final int turret_LEDPin = 9;
+
+        public static final int LED_Count_BackLeft = 39;
+        public static final int LED_Count_BackRight = 39;
+        public static final int LED_Count_FrontLeft = 40;
+        public static final int LED_Count_FrontRight = 40;
+        public static final int LED_Count_Turret = 40;
+
     }
 }

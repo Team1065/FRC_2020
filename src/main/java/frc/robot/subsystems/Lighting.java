@@ -1,10 +1,7 @@
-package frc.robot.subsystems;
+/*package frc.robot.subsystems;
 
-import java.sql.Driver;
-import java.sql.PseudoColumnUsage;
 import java.util.Random;
 
-import edu.wpi.first.hal.sim.mockdata.DriverStationDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,20 +9,38 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LightingConstants;
+
+//TODO: Clean this mess up
 
 public class Lighting extends SubsystemBase {
 
-    public enum State{SHOW, TELEOP, ENDGAME};
+    public enum State{PIT, SHOW, TELEOP, ENDGAME};
     State curLEDState = State.SHOW;
 
-    public int LED_COUTN1 = 100;
-    public double ledBufferLen;
+    private double backLeftBufferLen;
+    private double backRightBufferLen;
+    private double frontLeftBufferLen;
+    private double frontRightBufferLen;
+    private double turretBufferLen;
+
     private int m_rainbowFirstPixelHue;
+
+    Timer LED_TIMER;
 
     int test = 0;
 
-    AddressableLED led1;
-    AddressableLEDBuffer ledBuffer;
+    AddressableLED backLeft_LEDStrip;
+    AddressableLED backRight_LEDStrip;
+    AddressableLED frontLeft_LEDStrip;
+    AddressableLED frontRight_LEDStrip;
+    AddressableLED turret_LEDStrip;
+
+    AddressableLEDBuffer backLeft_LEDBuffer;
+    AddressableLEDBuffer backRight_LEDBuffer;
+    AddressableLEDBuffer frontLeft_LEDBuffer;
+    AddressableLEDBuffer frontRight_LEDBuffer;
+    AddressableLEDBuffer turret_LEDBuffer;
 
     DriverStation ds = DriverStation.getInstance();
 
@@ -35,14 +50,40 @@ public class Lighting extends SubsystemBase {
 
     public Lighting()
     {
-        led1 = new AddressableLED(9);
+        backLeft_LEDStrip = new AddressableLED(LightingConstants.backLeft_LEDPin);
+        backRight_LEDStrip = new AddressableLED(LightingConstants.backRight_LEDPin);
+        frontLeft_LEDStrip = new AddressableLED(LightingConstants.frontLeft_LEDPin);
+        frontRight_LEDStrip = new AddressableLED(LightingConstants.frontRight_LEDPin);
+        turret_LEDStrip = new AddressableLED(LightingConstants.turret_LEDPin);
 
-        ledBuffer = new AddressableLEDBuffer(LED_COUTN1);
-        led1.setLength(ledBuffer.getLength());
 
-        led1.setData(ledBuffer);
-        led1.start();
-        ledBufferLen = ledBuffer.getLength();
+        backLeft_LEDBuffer = new AddressableLEDBuffer(LightingConstants.LED_Count_BackLeft);
+        backRight_LEDBuffer = new AddressableLEDBuffer(LightingConstants.LED_Count_BackRight);
+        frontLeft_LEDBuffer = new AddressableLEDBuffer(LightingConstants.LED_Count_FrontLeft);
+        frontRight_LEDBuffer = new AddressableLEDBuffer(LightingConstants.LED_Count_FrontRight);
+        turret_LEDBuffer = new AddressableLEDBuffer(LightingConstants.LED_Count_Turret);
+
+
+        backLeft_LEDStrip.setLength(backLeft_LEDBuffer.getLength());
+        backRight_LEDStrip.setLength(backRight_LEDBuffer.getLength());
+        frontLeft_LEDStrip.setLength(frontLeft_LEDBuffer.getLength());
+        frontRight_LEDStrip.setLength(frontRight_LEDBuffer.getLength());
+        turret_LEDStrip.setLength(turret_LEDBuffer.getLength());
+
+        backLeft_LEDStrip.setData(backLeft_LEDBuffer);
+        backRight_LEDStrip.setData(backRight_LEDBuffer);
+        frontLeft_LEDStrip.setData(frontLeft_LEDBuffer);
+        frontRight_LEDStrip.setData(frontRight_LEDBuffer);
+        turret_LEDStrip.setData(turret_LEDBuffer);
+
+        backLeft_LEDStrip.start();
+        backRight_LEDStrip.start();
+        frontLeft_LEDStrip.start();
+        frontRight_LEDStrip.start();
+        turret_LEDStrip.start();
+ 
+        LED_TIMER = new Timer();
+        LED_TIMER.start();
     }
 
     public void setLedState(State state)
@@ -75,7 +116,7 @@ public class Lighting extends SubsystemBase {
         test = 1;
       }*/
       
-     if(ds.isOperatorControl())
+     /*if(ds.isOperatorControl())
       {
         setLedState(State.TELEOP);
       }
@@ -135,7 +176,6 @@ public class Lighting extends SubsystemBase {
       quickFill(Color.kDarkTurquoise, 0.02);
       clearStrip();
       alternatingColors(Color.kGold, Color.kBlue);
-      pause(0.5);
       alternatingColors(Color.kBlue, Color.kGold);
       pause(0.5);
       alternatingColors(Color.kGold, Color.kBlue);
@@ -159,61 +199,60 @@ public class Lighting extends SubsystemBase {
 
     private void pause(double time)
     {
-      Timer.delay(time);
+      
     }
 
-    private void clearStrip()
+    private void clearStrip(AddressableLED led,AddressableLEDBuffer buffer)
     {
-      for(int i = 0; i < ledBuffer.getLength(); i++)
+      for(int i = 0; i < buffer.getLength(); i++)
       {
-        ledBuffer.setRGB(i, 0, 0, 0);
+        buffer.setRGB(i, 0, 0, 0);
       }
-      led1.setData(ledBuffer);
+      led.setData(buffer);
     }
   
-    private void fadeFromColor(int h)
+    private void fadeFromColor(int h, AddressableLED led, AddressableLEDBuffer buffer)
     {
       for(int i = 255; i > 0; i-=15)
       {
-        for(int j = 0; j < ledBuffer.getLength(); j++)
+        for(int j = 0; j < buffer.getLength(); j++)
         {
-          ledBuffer.setHSV(j, h, 255, i);
+          buffer.setHSV(j, h, 255, i);
         }
-        led1.setData(ledBuffer);
-        pause(0.1);
+        led.setData(buffer);
       }
-      clearStrip();
+      clearStrip(led, buffer);
     }
 
-    private void fadeToColor(int h)
+    private void fadeToColor(int h, AddressableLED led, AddressableLEDBuffer buffer)
     {
       for(int i = 0; i < 255; i+=15)
       {
-        for(int j = 0; j < ledBuffer.getLength(); j++)
+        for(int j = 0; j < buffer.getLength(); j++)
         {
-          ledBuffer.setHSV(j, h, 255, i);
+          buffer.setHSV(j, h, 255, i);
         }
-        led1.setData(ledBuffer);
+        led.setData(buffer);
         pause(0.1);
       }
     }
 
 
-    private void rainbow() {
+    private void rainbow(AddressableLED led, AddressableLEDBuffer buffer) {
       // For every pixel
-      for (int i = 0; i < ledBuffer.getLength(); i++) {
+      for (int i = 0; i < buffer.getLength(); i++) {
         // Calculate the hue - hue is easier for rainbows because the color
         // shape is a circle so only one value needs to precess
-        final var hue = (m_rainbowFirstPixelHue + (i * 180 / ledBuffer.getLength())) % 180;
+        final var hue = (m_rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
         // Set the value
-        ledBuffer.setHSV(i, hue, 255, 128);
+        buffer.setHSV(i, hue, 255, 128);
       }
       // Increase by to make the rainbow "move"
       m_rainbowFirstPixelHue += 3;
       // Check bounds
       m_rainbowFirstPixelHue %= 180;
 
-      led1.setData(ledBuffer);
+      led.setData(buffer);
     }
 
 
@@ -401,7 +440,7 @@ public class Lighting extends SubsystemBase {
         ledBuffer.setLED(groups[i][j], Color.kDeepSkyBlue);
        }
       }*/
-      led1.setData(ledBuffer);
+ /*     led1.setData(ledBuffer);
     }
 
     private void shooterSpeed(int curSpeed, int targetSpeed)
@@ -419,7 +458,7 @@ public class Lighting extends SubsystemBase {
 
 
 
-    }
+ /*   }
 
 
     public void update()
@@ -430,4 +469,4 @@ public class Lighting extends SubsystemBase {
     }
 
 
-}
+}*/
