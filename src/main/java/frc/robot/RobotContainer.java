@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -23,10 +24,12 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.commands.Auto1;
+import frc.robot.commands.Auto2;
+import frc.robot.commands.Auto3;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Lighting;
+//import frc.robot.subsystems.Lighting;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
@@ -46,6 +49,7 @@ public class RobotContainer {
   private final Turret m_turret = new Turret();
   private final Climber m_climber = new Climber();
   //private final Lighting m_lighting = new Lighting();
+  private final Compressor m_compressor = new Compressor();
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -78,6 +82,8 @@ public class RobotContainer {
     // Add commands to the autonomous command chooser
     m_chooser.setDefaultOption("Default Auto", new Auto1(m_shooter, m_cellManipulation, m_drive));
     m_chooser.addOption("Auto1", new Auto1(m_shooter, m_cellManipulation, m_drive));
+    m_chooser.addOption("Auto2", new Auto2(m_shooter, m_cellManipulation, m_drive));
+    m_chooser.addOption("Auto3", new Auto3(m_shooter, m_cellManipulation, m_drive));
     SmartDashboard.putData("Auto modes", m_chooser);
     
     //default drive
@@ -136,37 +142,32 @@ public class RobotContainer {
     //default cell manipulation
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
-        m_cellManipulation.sensorControl(m_copilotDS.getRawButton(OIConstants.kIntakeInPort), m_copilotDS.getRawButton(OIConstants.kIntakeOutPort));
+        m_cellManipulation.setIntakeSolenoid(m_copilotDS.getRawButton(OIConstants.kIntakeSolenoidPort));
+
+        //anti jam mode when left trigger and thumb button are pressed at the same time
+        if(m_leftJoystick.getRawButton(OIConstants.kstraightDrivePort) && m_leftJoystick.getRawButton(OIConstants.kshootPort)){
+          m_cellManipulation.antiJam();
+        }
+        else{
+          m_cellManipulation.sensorControl(m_copilotDS.getRawButton(OIConstants.kIntakeInPort), m_copilotDS.getRawButton(OIConstants.kIntakeOutPort));
+        }
       }
       , m_cellManipulation));
       
-      //default climber
+      //default climber Command
       m_climber.setDefaultCommand(
         new RunCommand( () -> {
-          //Are we on the field?
-          if(DriverStation.getInstance().isFMSAttached()){
-            double commandedSpeed = getDesiredClimberSpeed();
-            //only go one direction on the field
-            if(commandedSpeed < 0){
-              commandedSpeed = 0;
-            }
-
-            //if we are looking for the bottom sensor and it is active then stop the climber
-            if(m_climber.lookForBottomSwitch() && m_climber.getBottomSensorActive()){
-              commandedSpeed = 0;
-            }
-            
+          double commandedSpeed = getDesiredClimberSpeed();
+          //if we are looking for the bottom sensor and it is active then stop the climber
+          if(m_climber.lookForBottomSwitch() && m_climber.getBottomSensorActive() && commandedSpeed>0){
+            commandedSpeed = 0;
+          }
+          //only move climber if the compressor switch is set
+          if(m_copilotDS.getRawButton(OIConstants.kClimberSwitchPort)){
             m_climber.setClimberSpeed(commandedSpeed);
           }
           else{
-            //We are on the PIT
-            //only move climber if the compressor switch is set
-            if(m_copilotDS.getRawButton(OIConstants.kClimberSwitchPort)){
-              m_climber.setClimberSpeed(getDesiredClimberSpeed());
-            }
-            else{
-              m_climber.setClimberSpeed(0);
-            }
+            m_climber.setClimberSpeed(0);
           }
         }, m_climber));
   }
@@ -178,8 +179,11 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    //Compressor Control
+    new JoystickButton(m_copilotDS, OIConstants.kCompressorSwitchPort).whenHeld( straightDriveCommand.beforeStarting( () -> m_driveStraightSetpoint = m_drive.getHeading(), m_drive ) );
+
     //Drive Straight
-    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> m_driveStraightSetpoint = m_drive.getHeading(), m_drive ) );
+    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( new RunCommand( () -> m_compressor.setClosedLoopControl(false)).andThen( () -> m_compressor.setClosedLoopControl(true) ) );
 
     //Shoot trigger
     new JoystickButton(m_rightJoystick, OIConstants.kshootPort).whenHeld( new RunCommand( () -> {

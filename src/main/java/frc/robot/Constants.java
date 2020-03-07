@@ -45,22 +45,22 @@ public final class Constants {
         public static final int kHoodServo2Port = 1;//PWM
 
         public static final int kEncoderCPR = 42; //NEO encoder 42 CPR
-        public static final double kP = 0.000230;//TODO: Tune
-        public static final double kI = 0.000001;
+        public static final double kP = 0;//0.000230;
+        public static final double kI = 0;//0.000001;
         public static final double kD = 0;
-        public static final double kIZone = 330;
-        public static final double kFF = 0.000165;
+        public static final double kIZone = 0;//330;
+        public static final double kFF = 1;//0.000165;
         public static final double kMaxOutput = 1;
         public static final double kMinOutput = 0;
-        public static final double kAllowedError  = 300;//TODO: Tune
+        public static final double kAllowedError  = 200;
 
-        public static final double kShooterSpeed1 = 3000;
-        public static final double kShooterSpeed2 = 4000;
-        public static final double kShooterSpeed3 = 5500;
+        public static final double kShooterSpeed1 = 5000;
+        public static final double kShooterSpeed2 = 5000;
+        public static final double kShooterSpeed3 = 5000;
 
-        public static final double kShooterHoodAngle1 = 0;//TODO: Tune
-        public static final double kShooterHoodAngle2 = 0;//TODO: Tune
-        public static final double kShooterHoodAngle3 = 0;//TODO: Tune
+        public static final double kShooterHoodAngle1 = 0.2;//TODO: Tune
+        public static final double kShooterHoodAngle2 = 0.4;//TODO: Tune
+        public static final double kShooterHoodAngle3 = 0.6;//TODO: Tune
 
 
         public static final double kDefaultHoodAngle  = 0;//TODO: Tune
@@ -72,6 +72,8 @@ public final class Constants {
         public static final int kIntakeMotorPort = 1;//VictorSPX
         public static final int kQueueMotorPort = 2;//VictorSPX
         public static final int kConveyorMotorPort = 3;//VictorSPX
+
+        public static final int kIntakeSolenoidPort = 0;//PCM
 
         public static final int kTopSensorPort = 4;
         public static final int kMiddleTopSensorPort = 3;
@@ -94,8 +96,6 @@ public final class Constants {
         public static final int kClimberSlaveMotor = 6;//VictorSPX
 
         public static final int kBottomSensorPort = 7;
-
-        public static final double kP  = 0.07;//TODO: Tune
     }
 
     public static final class OIConstants {
@@ -109,9 +109,12 @@ public final class Constants {
 
         //copilot inputs
         public static final int kVisionSwitchPort = 1;//old climber switch
-        public static final int kClimberSwitchPort = 2;//old Compressor switch
+        public static final int kCompressorSwitchPort = 2;//old Compressor switch
         public static final int kIntakeInPort = 4;
         public static final int kIntakeOutPort = 5;
+        public static final int kClimberSwitchPort = 9;//old elevator overide switch
+        public static final int kIntakeSolenoidPort = 12;
+
         public static final int kTurretJoystickXPort = 4;
         public static final int kClimberJoystickYPort = 2;
     }

@@ -92,7 +92,7 @@ public class Shooter extends SubsystemBase {
 
   public boolean upToSpeed() {
     double curVel = m_encoder.getVelocity();
-    return Math.abs(curVel - m_setpoint) < ShooterConstants.kAllowedError;
+    return curVel > m_setpoint - ShooterConstants.kAllowedError;
   }
 
   public void tune () {

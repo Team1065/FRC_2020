@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CellManiputalionConstants;
@@ -20,6 +21,8 @@ public class CellManipulation extends SubsystemBase {
   private final VictorSPX m_intakeMotor = new VictorSPX(CellManiputalionConstants.kIntakeMotorPort);
   private final VictorSPX m_queueMotor = new VictorSPX(CellManiputalionConstants.kQueueMotorPort);
   private final VictorSPX m_conveyorMotor = new VictorSPX(CellManiputalionConstants.kConveyorMotorPort);
+
+  private final Solenoid m_intakeSolenoid = new Solenoid(CellManiputalionConstants.kIntakeSolenoidPort);
 
   private final DigitalInput m_topSensor = new DigitalInput(CellManiputalionConstants.kTopSensorPort);
   private final DigitalInput m_middleTopSensor = new DigitalInput(CellManiputalionConstants.kMiddleTopSensorPort);
@@ -39,6 +42,10 @@ public class CellManipulation extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     updateStatus();
+  }
+
+  public void setIntakeSolenoid(boolean state){
+    m_intakeSolenoid.set(state);
   }
 
   public void setIntake(double speed){
@@ -81,6 +88,12 @@ public class CellManipulation extends SubsystemBase {
   public void updateStatus(){
     SmartDashboard.putNumber("[CM] Highest Sensor Active", getHighestSensorActive());
     SmartDashboard.putBoolean("[CM] Bottom Sensor Active", getBottomSensor());
+  }
+
+  public void antiJam(){
+    setIntake(-.5);
+    setQueue(-.5);
+    setConveyor(0);
   }
 
   public void sensorControl(boolean intakeIn, boolean intakeOut){
