@@ -19,23 +19,24 @@ import frc.robot.subsystems.Shooter;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class Auto1 extends SequentialCommandGroup {
+public class AutoShoot3 extends SequentialCommandGroup {
   /**
    * Creates a new Auto1.
    */
-  public Auto1(Shooter shooter, CellManipulation cellManipulation, DriveSubsystem drive) {
+  public AutoShoot3(Shooter shooter, CellManipulation cellManipulation, DriveSubsystem drive) {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
     super(
       new ResetDriveSensors(drive),
       //set shooter speed and shoot once it is up to speed for x seconds
       new ParallelRaceGroup(
-        new SetShooterSpeed(5000, 0, shooter),
+        new SetShooterSpeed(5000, 0.6, shooter),
         new SequentialCommandGroup(
           new WaitUntilCommand(shooter::upToSpeed),
           new Shoot(cellManipulation).withTimeout(3)
         )
-      )
+      ),
+      new DriveToDistance(35, drive)
       /*,
       //set intake in and drive to pick up a group of cells
       new ParallelRaceGroup(

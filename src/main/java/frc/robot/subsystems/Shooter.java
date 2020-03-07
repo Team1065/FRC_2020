@@ -59,13 +59,13 @@ public class Shooter extends SubsystemBase {
     m_pidController.setOutputRange(ShooterConstants.kMinOutput, ShooterConstants.kMaxOutput);
 
     // display PID coefficients on SmartDashboard
-    SmartDashboard.putNumber("[Shooter] P Gain", ShooterConstants.kP);
+    /*SmartDashboard.putNumber("[Shooter] P Gain", ShooterConstants.kP);
     SmartDashboard.putNumber("[Shooter] I Gain", ShooterConstants.kI);
     SmartDashboard.putNumber("[Shooter] D Gain", ShooterConstants.kD);
     SmartDashboard.putNumber("[Shooter] I Zone", ShooterConstants.kIZone);
     SmartDashboard.putNumber("[Shooter] Feed Forward", ShooterConstants.kFF);
     SmartDashboard.putNumber("[Shooter] Setpoint", 0);
-    SmartDashboard.putNumber("[Shooter] Tune Hood Value(0-1)", ShooterConstants.kDefaultHoodAngle);
+    SmartDashboard.putNumber("[Shooter] Tune Hood Value(0-1)", ShooterConstants.kDefaultHoodAngle);*/
   }
 
   private void configureSpark(CANSparkMax sparkMax) {

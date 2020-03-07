@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
@@ -21,6 +22,7 @@ public class Climber extends SubsystemBase {
   public final VictorSPX m_climberMotorMaster = new VictorSPX(ClimberConstants.kClimberMasterMotor);
   public final VictorSPX m_climberMotorSlave = new VictorSPX(ClimberConstants.kClimberSlaveMotor);
   public final DigitalInput m_bottomSensor = new DigitalInput(ClimberConstants.kBottomSensorPort);
+  public final Solenoid m_climberSolenoid = new Solenoid(ClimberConstants.kClimberSolenoidPort);
 
   public double m_bottomSwitchFalseCount = 0;
 
@@ -38,6 +40,10 @@ public class Climber extends SubsystemBase {
 
   public void setClimberSpeed(double speed){
     m_climberMotorMaster.set(ControlMode.PercentOutput,speed);
+  }
+
+  public void setClimberSolenoid(boolean state){
+    m_climberSolenoid.set(state);
   }
 
   public boolean lookForBottomSwitch(){

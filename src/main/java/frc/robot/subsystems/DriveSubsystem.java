@@ -44,10 +44,11 @@ public class DriveSubsystem extends SubsystemBase {
     configureSpark(m_leftBackMotor);
     configureSpark(m_rightFrontMotor);
     configureSpark(m_rightBackMotor);
+    m_drive.setMaxOutput(0.5);
 
     //Set only the back motors to brake to get a less aggressive 
-    m_leftBackMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    m_rightFrontMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    //m_leftBackMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    //m_rightFrontMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
     m_encoder = m_leftFrontMotor.getEncoder();
 

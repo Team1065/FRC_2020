@@ -58,12 +58,12 @@ public final class Constants {
         public static final double kShooterSpeed2 = 5000;
         public static final double kShooterSpeed3 = 5000;
 
-        public static final double kShooterHoodAngle1 = 0.2;//TODO: Tune
-        public static final double kShooterHoodAngle2 = 0.4;//TODO: Tune
-        public static final double kShooterHoodAngle3 = 0.6;//TODO: Tune
+        public static final double kShooterHoodAngle1 = 0;//TODO: Tune
+        public static final double kShooterHoodAngle2 = 0.6;//TODO: Tune
+        public static final double kShooterHoodAngle3 = 0.7;//TODO: Tune
 
 
-        public static final double kDefaultHoodAngle  = 0;//TODO: Tune
+        public static final double kDefaultHoodAngle  = 0.6;//TODO: Tune
 
         public static final int kCurrentLimit  = 80;//TODO: Might need to tune
     }
@@ -80,6 +80,7 @@ public final class Constants {
         public static final int kMiddleSensorPort = 2;
         public static final int kMiddleBottomSensorPort = 1;
         public static final int kBottomSensorPort = 0;
+        public static final int kBottomSensor2Port = 8;
     }
 
     public static final class TurretConstants {
@@ -88,12 +89,14 @@ public final class Constants {
         public static final int kLeftSensorPort = 6;
         public static final int kRightSensorPort = 5;
 
-        public static final double kP  = 0.05;//TODO: Tune
+        public static final double kP  = 0.08;//TODO: Tune
     }
 
     public static final class ClimberConstants {
         public static final int kClimberMasterMotor = 5;//VictorSPX
         public static final int kClimberSlaveMotor = 6;//VictorSPX
+
+        public static final int kClimberSolenoidPort = 1; //PCM
 
         public static final int kBottomSensorPort = 7;
     }
@@ -112,6 +115,7 @@ public final class Constants {
         public static final int kCompressorSwitchPort = 2;//old Compressor switch
         public static final int kIntakeInPort = 4;
         public static final int kIntakeOutPort = 5;
+        public static final int kClimberSolenoidPort = 6;//old Arm Up
         public static final int kClimberSwitchPort = 9;//old elevator overide switch
         public static final int kIntakeSolenoidPort = 12;
 

@@ -23,9 +23,10 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.commands.Auto1;
-import frc.robot.commands.Auto2;
-import frc.robot.commands.Auto3;
+import frc.robot.commands.AutoShoot3;
+import frc.robot.commands.AutoShootPartner;
+import frc.robot.commands.AutoShootTrench;
+import frc.robot.commands.AutoShootFarTrench;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
@@ -80,10 +81,11 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Add commands to the autonomous command chooser
-    m_chooser.setDefaultOption("Default Auto", new Auto1(m_shooter, m_cellManipulation, m_drive));
-    m_chooser.addOption("Auto1", new Auto1(m_shooter, m_cellManipulation, m_drive));
-    m_chooser.addOption("Auto2", new Auto2(m_shooter, m_cellManipulation, m_drive));
-    m_chooser.addOption("Auto3", new Auto3(m_shooter, m_cellManipulation, m_drive));
+    m_chooser.setDefaultOption("Default Auto", new AutoShoot3(m_shooter, m_cellManipulation, m_drive));
+    m_chooser.addOption("Shoot 3", new AutoShoot3(m_shooter, m_cellManipulation, m_drive));
+    m_chooser.addOption("Shoot Trench", new AutoShootTrench(m_shooter, m_cellManipulation, m_drive));
+    m_chooser.addOption("Shoot far Trench", new AutoShootFarTrench(m_shooter, m_cellManipulation, m_drive));
+    m_chooser.addOption("Shoot Partner", new AutoShootPartner(m_shooter, m_cellManipulation, m_drive));
     SmartDashboard.putData("Auto modes", m_chooser);
     
     //default drive
@@ -157,6 +159,7 @@ public class RobotContainer {
       //default climber Command
       m_climber.setDefaultCommand(
         new RunCommand( () -> {
+          m_climber.setClimberSolenoid(m_copilotDS.getRawButton(OIConstants.kClimberSolenoidPort));
           double commandedSpeed = getDesiredClimberSpeed();
           //if we are looking for the bottom sensor and it is active then stop the climber
           if(m_climber.lookForBottomSwitch() && m_climber.getBottomSensorActive() && commandedSpeed>0){
@@ -164,9 +167,11 @@ public class RobotContainer {
           }
           //only move climber if the compressor switch is set
           if(m_copilotDS.getRawButton(OIConstants.kClimberSwitchPort)){
+            m_climber.setClimberSolenoid(m_copilotDS.getRawButton(OIConstants.kClimberSolenoidPort));
             m_climber.setClimberSpeed(commandedSpeed);
           }
           else{
+            m_climber.setClimberSolenoid(false);
             m_climber.setClimberSpeed(0);
           }
         }, m_climber));
@@ -179,11 +184,13 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //Compressor Control
-    new JoystickButton(m_copilotDS, OIConstants.kCompressorSwitchPort).whenHeld( straightDriveCommand.beforeStarting( () -> m_driveStraightSetpoint = m_drive.getHeading(), m_drive ) );
-
     //Drive Straight
-    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( new RunCommand( () -> m_compressor.setClosedLoopControl(false)).andThen( () -> m_compressor.setClosedLoopControl(true) ) );
+    new JoystickButton(m_rightJoystick, OIConstants.kstraightDrivePort).whenHeld( straightDriveCommand.beforeStarting( () -> m_driveStraightSetpoint = m_drive.getHeading(), m_drive ) );
+
+    //Compressors
+    new JoystickButton(m_copilotDS, OIConstants.kCompressorSwitchPort).whenHeld( new RunCommand( () -> {m_compressor.setClosedLoopControl(true);SmartDashboard.putBoolean("Compressor pressure switch", m_compressor.getPressureSwitchValue());}) );
+    new JoystickButton(m_copilotDS, OIConstants.kCompressorSwitchPort).whenReleased( new RunCommand( () -> {m_compressor.setClosedLoopControl(true);SmartDashboard.putBoolean("Compressor pressure switch", m_compressor.getPressureSwitchValue());}) );
+
 
     //Shoot trigger
     new JoystickButton(m_rightJoystick, OIConstants.kshootPort).whenHeld( new RunCommand( () -> {
@@ -245,7 +252,7 @@ public class RobotContainer {
     
     //If Shooter Knob is at 1
     if(knobValue < 0.024 - threshold){
-      angle = 0;
+      angle = ShooterConstants.kShooterHoodAngle2;
     }
     //If Shooter Knob is at 2
     else if(knobValue >= 0.024 - threshold && knobValue < 0.024 + threshold){
@@ -261,7 +268,7 @@ public class RobotContainer {
     }
     else
     {
-      angle = 0;
+      angle = ShooterConstants.kShooterHoodAngle2;
     }
   
     return angle;

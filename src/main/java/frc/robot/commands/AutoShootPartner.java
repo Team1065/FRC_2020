@@ -9,7 +9,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
@@ -18,18 +17,18 @@ import frc.robot.subsystems.Shooter;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class Auto2 extends SequentialCommandGroup {
+public class AutoShootPartner extends SequentialCommandGroup {
   /**
-   * Creates a new Auto2.
+   * Creates a new AutoShootPartner.
    */
-  public Auto2(Shooter shooter, CellManipulation cellManipulation, DriveSubsystem drive) {
+  public AutoShootPartner(Shooter shooter, CellManipulation cellManipulation, DriveSubsystem drive) {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
     super(
       new ResetDriveSensors(drive),
       //set shooter speed and shoot once it is up to speed for x seconds
       new ParallelRaceGroup(
-        new SetShooterSpeed(5000, 0, shooter),
+        new SetShooterSpeed(5000, 0.6, shooter),
         new SequentialCommandGroup(
           new WaitUntilCommand(shooter::upToSpeed),
           new Shoot(cellManipulation).withTimeout(3)

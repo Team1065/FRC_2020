@@ -29,13 +29,14 @@ public class CellManipulation extends SubsystemBase {
   private final DigitalInput m_middleSensor = new DigitalInput(CellManiputalionConstants.kMiddleSensorPort);
   private final DigitalInput m_middleBottomSensor = new DigitalInput(CellManiputalionConstants.kMiddleBottomSensorPort);
   private final DigitalInput m_bottomSensor = new DigitalInput(CellManiputalionConstants.kBottomSensorPort);
+  private final DigitalInput m_bottomSensor2 = new DigitalInput(CellManiputalionConstants.kBottomSensor2Port);
 
   public CellManipulation() {
     m_intakeMotor.setNeutralMode(NeutralMode.Brake);
     m_queueMotor.setNeutralMode(NeutralMode.Brake);
     m_conveyorMotor.setNeutralMode(NeutralMode.Brake);
 
-    m_intakeMotor.setInverted(true);
+    //m_intakeMotor.setInverted(true);
   }
 
   @Override
@@ -73,7 +74,7 @@ public class CellManipulation extends SubsystemBase {
     else if(!m_middleBottomSensor.get()){
       return 2;
     }
-    else if(!m_bottomSensor.get()){
+    else if(!m_bottomSensor.get() || !m_bottomSensor2.get()){
       return 1;
     }
     else{
@@ -82,7 +83,7 @@ public class CellManipulation extends SubsystemBase {
   }
 
   public boolean getBottomSensor(){
-    return !m_bottomSensor.get();
+    return !m_bottomSensor.get() || !m_bottomSensor2.get();
   }
 
   public void updateStatus(){
