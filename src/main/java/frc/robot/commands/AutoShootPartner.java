@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.DriveSubsystem;
@@ -32,6 +33,18 @@ public class AutoShootPartner extends SequentialCommandGroup {
         new SequentialCommandGroup(
           new WaitUntilCommand(shooter::upToSpeed),
           new Shoot(cellManipulation).withTimeout(3)
+        )
+      ),
+      new DriveToDistance(-10, drive),
+      new ParallelRaceGroup(
+        new IntakeInandDown(true,true,cellManipulation),
+        new WaitCommand(4)
+      ),
+      new ParallelRaceGroup(
+        new SetShooterSpeed(5000, 0.6, shooter),
+        new SequentialCommandGroup(
+          new WaitUntilCommand(shooter::upToSpeed),
+          new Shoot(cellManipulation).withTimeout(5)
         )
       )
     );

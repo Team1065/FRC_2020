@@ -7,13 +7,10 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
-import com.revrobotics.SparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Servo;
@@ -118,6 +115,7 @@ public class Shooter extends SubsystemBase {
 
   public void updateStatus(){
     SmartDashboard.putNumber("[Shooter] Velocity", m_encoder.getVelocity());
+    SmartDashboard.putBoolean("[Shooter] At speed", upToSpeed());
     SmartDashboard.putNumber("[Shooter] Hood Angle", m_hoodServo1.get());
   }
 }

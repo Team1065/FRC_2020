@@ -23,9 +23,9 @@ public class Vision extends SubsystemBase {
   //sets
   private final NetworkTableEntry ledMode = limelightTable.getEntry("ledMode");
   private final NetworkTableEntry camMode = limelightTable.getEntry("camMode");
-  private final NetworkTableEntry pipeline = limelightTable.getEntry("pipeline");
-  private final NetworkTableEntry stream = limelightTable.getEntry("stream");
-  private final NetworkTableEntry snapshot = limelightTable.getEntry("snapshot");
+  //private final NetworkTableEntry pipeline = limelightTable.getEntry("pipeline");
+  //private final NetworkTableEntry stream = limelightTable.getEntry("stream");
+  //private final NetworkTableEntry snapshot = limelightTable.getEntry("snapshot");
 
   public Vision() {
   }

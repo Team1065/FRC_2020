@@ -62,7 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
   private void configureSpark(CANSparkMax sparkMax) {
     sparkMax.restoreFactoryDefaults();
     //sparkMax.enableVoltageCompensation(12.0s);
-    sparkMax.setOpenLoopRampRate(0.08);
+    sparkMax.setOpenLoopRampRate(0.01);//TODO: tune to slow acceleration
     sparkMax.setSmartCurrentLimit(DriveConstants.kCurrentLimit);
     sparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }

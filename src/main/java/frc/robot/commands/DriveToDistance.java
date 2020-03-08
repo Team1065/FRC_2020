@@ -34,7 +34,21 @@ public class DriveToDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.arcadeDrive( distancePID.calculate(m_drive.getDistance()), rotationPID.calculate(m_drive.getHeading()) );
+    double speed = distancePID.calculate(m_drive.getDistance());
+    double maxSpeed = .4;//TODO: tune
+    if(speed > maxSpeed)
+      speed = maxSpeed;
+    else if(speed < -maxSpeed)
+      speed = -maxSpeed;
+
+    double rotspeed = rotationPID.calculate(m_drive.getHeading());
+    double maxrotSpeed = .4;//TODO: tune
+    if(speed > maxSpeed)
+      speed = maxSpeed;
+    else if(speed < -maxSpeed)
+      speed = -maxSpeed;
+
+    m_drive.arcadeDrive( speed, rotspeed);
   }
 
   // Called once the command ends or is interrupted.

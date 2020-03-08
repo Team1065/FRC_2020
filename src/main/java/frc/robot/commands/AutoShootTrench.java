@@ -34,6 +34,23 @@ public class AutoShootTrench extends SequentialCommandGroup {
           new WaitUntilCommand(shooter::upToSpeed),
           new Shoot(cellManipulation).withTimeout(3)
         )
+      ),
+      new ParallelRaceGroup(
+        new IntakeInandDown(true,true,cellManipulation),
+        new SequentialCommandGroup(
+          new TurnToAngle(-90, drive),
+          new DriveToDistance(90, drive),
+          new WaitCommand(1),
+          new DriveToDistance(-60, drive),
+          new TurnToAngle(5, drive)
+        )
+      ),
+      new ParallelRaceGroup(
+        new SetShooterSpeed(5300, 0.7, shooter),
+        new SequentialCommandGroup(
+          new WaitUntilCommand(shooter::upToSpeed),
+          new Shoot(cellManipulation).withTimeout(3)
+        )
       )
     );
   }

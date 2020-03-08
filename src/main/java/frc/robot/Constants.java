@@ -89,7 +89,7 @@ public final class Constants {
         public static final int kLeftSensorPort = 6;
         public static final int kRightSensorPort = 5;
 
-        public static final double kP  = 0.08;//TODO: Tune
+        public static final double kP  = 0.085;//TODO: Tune
     }
 
     public static final class ClimberConstants {

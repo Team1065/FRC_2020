@@ -29,10 +29,23 @@ public class AutoShootFarTrench extends SequentialCommandGroup {
       new ResetDriveSensors(drive),
       //set shooter speed and shoot once it is up to speed for x seconds
       new ParallelRaceGroup(
+        new IntakeInandDown(true,true,cellManipulation),
+        new SequentialCommandGroup(
+          new DriveToDistance(35, drive),
+          new WaitCommand(1),
+          new DriveToDistance(-10, drive),
+          new TurnToAngle(45, drive),
+          new DriveToDistance(15, drive),
+          new WaitCommand(1),
+          new DriveToDistance(-100, drive),
+          new TurnToAngle(105, drive)
+        )
+      ),
+      new ParallelRaceGroup(
         new SetShooterSpeed(5000, 0.6, shooter),
         new SequentialCommandGroup(
           new WaitUntilCommand(shooter::upToSpeed),
-          new Shoot(cellManipulation).withTimeout(3)
+          new Shoot(cellManipulation).withTimeout(5)
         )
       )
     );

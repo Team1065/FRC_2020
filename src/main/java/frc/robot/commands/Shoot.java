@@ -26,7 +26,7 @@ public class Shoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_cellManipulation.setIntake(0);
+    m_cellManipulation.setIntake(.4);
     m_cellManipulation.setQueue(.35);
     m_cellManipulation.setConveyor(.45);
   }
