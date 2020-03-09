@@ -21,7 +21,7 @@ public class DriveToDistance extends CommandBase {
     m_drive = drive;
     addRequirements(drive);
     distancePID.setSetpoint(targetDistance);
-    distancePID.setTolerance(2, 1);//TODO: tune
+    distancePID.setTolerance(5, 2);//TODO: tune
   }
 
   // Called when the command is initially scheduled.
@@ -35,14 +35,14 @@ public class DriveToDistance extends CommandBase {
   @Override
   public void execute() {
     double speed = distancePID.calculate(m_drive.getDistance());
-    double maxSpeed = .4;//TODO: tune
+    double maxSpeed = .55;//TODO: tune
     if(speed > maxSpeed)
       speed = maxSpeed;
     else if(speed < -maxSpeed)
       speed = -maxSpeed;
 
     double rotspeed = rotationPID.calculate(m_drive.getHeading());
-    double maxrotSpeed = .4;//TODO: tune
+    double maxrotSpeed = .8;//TODO: tune
     if(speed > maxSpeed)
       speed = maxSpeed;
     else if(speed < -maxSpeed)

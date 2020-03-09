@@ -44,7 +44,7 @@ public class DriveSubsystem extends SubsystemBase {
     configureSpark(m_leftBackMotor);
     configureSpark(m_rightFrontMotor);
     configureSpark(m_rightBackMotor);
-    m_drive.setMaxOutput(0.5);
+    m_drive.setMaxOutput(0.7);
 
     //Set only the back motors to brake to get a less aggressive 
     //m_leftBackMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -62,7 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
   private void configureSpark(CANSparkMax sparkMax) {
     sparkMax.restoreFactoryDefaults();
     //sparkMax.enableVoltageCompensation(12.0s);
-    sparkMax.setOpenLoopRampRate(0.01);//TODO: tune to slow acceleration
+    sparkMax.setOpenLoopRampRate(0.5);//TODO: tune to slow acceleration (higher slower)
     sparkMax.setSmartCurrentLimit(DriveConstants.kCurrentLimit);
     sparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }

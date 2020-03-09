@@ -48,7 +48,7 @@ public class RobotContainer {
   private final Turret m_turret = new Turret();
   private final Climber m_climber = new Climber();
   //private final Lighting m_lighting = new Lighting();
-  private final Compressor m_compressor = new Compressor();
+  private final Compressor m_compressor = new Compressor(0);
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -78,13 +78,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    // Add commands to the autonomous command chooser
-    m_chooser.setDefaultOption("Default Auto", new AutoShoot3(m_shooter, m_cellManipulation, m_drive));
-    m_chooser.addOption("Shoot 3", new AutoShoot3(m_shooter, m_cellManipulation, m_drive));
-    m_chooser.addOption("Shoot Trench", new AutoShootTrench(m_shooter, m_cellManipulation, m_drive));
-    m_chooser.addOption("Shoot far Trench", new AutoShootFarTrench(m_shooter, m_cellManipulation, m_drive));
-    m_chooser.addOption("Shoot Partner", new AutoShootPartner(m_shooter, m_cellManipulation, m_drive));
-    SmartDashboard.putData("Auto modes", m_chooser);
+    m_compressor.setClosedLoopControl(false);
     
     //default drive
     m_drive.setDefaultCommand(
@@ -142,15 +136,8 @@ public class RobotContainer {
     //default cell manipulation
     m_cellManipulation.setDefaultCommand(
       new RunCommand( () -> {
-        m_cellManipulation.setIntakeSolenoid(m_copilotDS.getRawButton(OIConstants.kIntakeSolenoidPort));
-
-        //anti jam mode when left trigger and thumb button are pressed at the same time
-        if(m_leftJoystick.getRawButton(OIConstants.kstraightDrivePort) && m_leftJoystick.getRawButton(OIConstants.kshootPort)){
-          m_cellManipulation.antiJam();
-        }
-        else{
-          m_cellManipulation.sensorControl(m_copilotDS.getRawButton(OIConstants.kIntakeInPort), m_copilotDS.getRawButton(OIConstants.kIntakeOutPort));
-        }
+        m_cellManipulation.setIntakeSolenoid(!m_copilotDS.getRawButton(OIConstants.kIntakeSolenoidPort));
+        m_cellManipulation.sensorControl(m_copilotDS.getRawButton(OIConstants.kIntakeInPort), m_copilotDS.getRawButton(OIConstants.kIntakeOutPort));
       }
       , m_cellManipulation));
       
@@ -173,6 +160,14 @@ public class RobotContainer {
             m_climber.setClimberSpeed(0);
           }
         }, m_climber));
+
+        // Add commands to the autonomous command chooser
+        m_chooser.setDefaultOption("Default Auto", new AutoShoot3(m_shooter, m_cellManipulation, m_drive));
+        m_chooser.addOption("Shoot 3", new AutoShoot3(m_shooter, m_cellManipulation, m_drive));
+        m_chooser.addOption("Trench", new AutoShootTrench(m_shooter, m_cellManipulation, m_drive));
+        m_chooser.addOption("Far Trench", new AutoShootFarTrench(m_shooter, m_cellManipulation, m_drive));
+        m_chooser.addOption("Shoot Partner", new AutoShootPartner(m_shooter, m_cellManipulation, m_drive));
+        SmartDashboard.putData("Auto modes", m_chooser);
   }
 
   /**
@@ -187,7 +182,7 @@ public class RobotContainer {
 
     //Compressors
     new JoystickButton(m_copilotDS, OIConstants.kCompressorSwitchPort).whenHeld( new RunCommand( () -> {m_compressor.setClosedLoopControl(true);SmartDashboard.putBoolean("Compressor pressure switch", m_compressor.getPressureSwitchValue());}) );
-    new JoystickButton(m_copilotDS, OIConstants.kCompressorSwitchPort).whenReleased( new RunCommand( () -> {m_compressor.setClosedLoopControl(true);SmartDashboard.putBoolean("Compressor pressure switch", m_compressor.getPressureSwitchValue());}) );
+    new JoystickButton(m_copilotDS, OIConstants.kCompressorSwitchPort).whenReleased( new RunCommand( () -> {m_compressor.setClosedLoopControl(false);SmartDashboard.putBoolean("Compressor pressure switch", m_compressor.getPressureSwitchValue());}) );
 
 
     //Shoot trigger

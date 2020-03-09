@@ -60,7 +60,7 @@ public final class Constants {
 
         public static final double kShooterHoodAngle1 = 0;//TODO: Tune
         public static final double kShooterHoodAngle2 = 0.6;//TODO: Tune
-        public static final double kShooterHoodAngle3 = 0.7;//TODO: Tune
+        public static final double kShooterHoodAngle3 = 0.68;//TODO: Tune
 
 
         public static final double kDefaultHoodAngle  = 0.6;//TODO: Tune

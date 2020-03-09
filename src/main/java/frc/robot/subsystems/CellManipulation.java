@@ -98,13 +98,13 @@ public class CellManipulation extends SubsystemBase {
   }
 
   public void sensorControl(boolean intakeIn, boolean intakeOut){
-    double intakeSpeed = .45;
+    double intakeSpeed = .5;
     double queueSpeed = .4;
     double conveyorSpeed = .6;
     if (intakeOut){
       setIntake(-intakeSpeed);
       setQueue(-queueSpeed);
-      setConveyor(-conveyorSpeed);
+      setConveyor(0);
     }
     else if (intakeIn){
       if (getHighestSensorActive() < 2){
