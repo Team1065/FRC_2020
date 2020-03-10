@@ -28,7 +28,7 @@ import frc.robot.commands.AutoShootFarTrench;
 import frc.robot.subsystems.CellManipulation;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
-//import frc.robot.subsystems.Lighting;
+import frc.robot.subsystems.Lighting;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
@@ -47,7 +47,7 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Turret m_turret = new Turret();
   private final Climber m_climber = new Climber();
-  //private final Lighting m_lighting = new Lighting();
+  private final Lighting m_lighting = new Lighting();
   private final Compressor m_compressor = new Compressor(0);
 
   // A chooser for autonomous commands

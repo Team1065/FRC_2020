@@ -1,29 +1,44 @@
 package frc.robot.subsystems;
 
-import java.util.Random;
+import java.security.CryptoPrimitive;
 
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.LightingConstants;
-
-//TODO: Clean this mess up
 
 public class Lighting extends SubsystemBase {
 
     public enum State{PIT, SHOW, TELEOP};
     State curLEDState = State.SHOW;
+    State oldState = curLEDState;
 
     DriverStation ds = DriverStation.getInstance();
     SerialPort arduino;
 
+    /*  Commands:
+        Modes:
+          m0 - Show
+          m1 - Pit
+          m2 - Teleop
+          m3 - Endgame
+        Balls:
+          b0 - 0 balls
+          b1 - 1 balls
+          b2 - 2 balls
+          b3 - 3 balls
+          b4 - 4 balls
+          b5 - 5 balls
+        Shooter:
+          t1 - Ready to shoot
+          t0 - Not ready to shoot
+        Climber (endgame):
+          c1 - Fully down
+          c0 - Not fully down
+        
 
+    */
 
 
     public Lighting()
@@ -31,6 +46,7 @@ public class Lighting extends SubsystemBase {
         try
         {
           arduino = new SerialPort(9600, Port.kUSB1);
+          arduino.writeString("Hello Arduino!");
         }
         catch(Exception e)
         {
@@ -43,6 +59,19 @@ public class Lighting extends SubsystemBase {
       curLEDState = state;
     }
 
+    public boolean changedState()
+    {
+      if(curLEDState != oldState)
+      {
+        oldState = curLEDState;
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
     @Override
     public void periodic() {
      
@@ -50,22 +79,37 @@ public class Lighting extends SubsystemBase {
       {
         setLedState(State.TELEOP);
       }
-      else if(ds.isOperatorControl() && !ds.isFMSAttached() && ds.isEnabled())
+      else if(!ds.isFMSAttached() && ds.isEnabled())
       {
         setLedState(State.PIT);
       }
-      else
+      else if(!ds.isEnabled())
       {
         setLedState(State.SHOW);
       }
 
       if(curLEDState == State.SHOW)
       {
-        // send mode
+        if(changedState())
+        {
+          sendState(State.SHOW);
+        }
       }
       else if(curLEDState == State.TELEOP)
       {
-        // send mode
+        if(changedState())
+        {
+          sendState(State.TELEOP);
+        }
+        
+      }
+      if(curLEDState == State.PIT)
+      {
+        if(changedState())
+        {
+          sendState(State.PIT);
+        }
+        
       }
     }
 
@@ -90,11 +134,11 @@ public class Lighting extends SubsystemBase {
     {
       if(s == State.PIT)
       {
-        arduino.writeString("m0");
+        arduino.writeString("m1");
       }
       else if(s == State.SHOW)
       {
-        arduino.writeString("m1");
+        arduino.writeString("m0");
       }
       else if(s == State.TELEOP)
       {
