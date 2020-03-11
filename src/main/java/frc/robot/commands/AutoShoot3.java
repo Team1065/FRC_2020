@@ -31,7 +31,8 @@ public class AutoShoot3 extends SequentialCommandGroup {
         new SetShooterSpeed(5000, 0.6, shooter),
         new SequentialCommandGroup(
           new WaitUntilCommand(shooter::upToSpeed),
-          new Shoot(cellManipulation).withTimeout(3)
+          new WaitCommand(1),
+          new Shoot(cellManipulation).withTimeout(5)
         )
       ),
       new DriveToDistance(35, drive)

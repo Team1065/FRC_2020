@@ -38,9 +38,10 @@ public class AutoShootPartner extends SequentialCommandGroup {
       new DriveToDistance(-10, drive),
       new ParallelRaceGroup(
         new IntakeInandDown(true,true,cellManipulation),
-        new WaitCommand(4)
+        new WaitCommand(3)
       ),
       new ParallelRaceGroup(
+        new IntakeInandDown(true,true,cellManipulation),
         new SetShooterSpeed(5000, 0.6, shooter),
         new SequentialCommandGroup(
           new WaitUntilCommand(shooter::upToSpeed),
