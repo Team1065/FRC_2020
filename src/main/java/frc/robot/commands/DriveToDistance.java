@@ -43,10 +43,10 @@ public class DriveToDistance extends CommandBase {
 
     double rotspeed = rotationPID.calculate(m_drive.getHeading());
     double maxrotSpeed = .8;//TODO: tune
-    if(speed > maxSpeed)
-      speed = maxSpeed;
-    else if(speed < -maxSpeed)
-      speed = -maxSpeed;
+    if(rotspeed > maxrotSpeed)
+      rotspeed = maxrotSpeed;
+    else if(rotspeed < -maxrotSpeed)
+      rotspeed = -maxrotSpeed;
 
     m_drive.arcadeDrive( speed, rotspeed);
   }
